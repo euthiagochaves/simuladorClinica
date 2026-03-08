@@ -1,0 +1,74 @@
+<div class="historia">
+  @if (mensagemErro()) {
+    <div class="historia__alerta historia__alerta--erro">{{ mensagemErro() }}</div>
+  }
+  @if (mensagemSucesso()) {
+    <div class="historia__alerta historia__alerta--sucesso">{{ mensagemSucesso() }}</div>
+  }
+
+  <div class="historia__campo">
+    <label class="historia__label">Resumen:</label>
+    <textarea
+      class="historia__textarea"
+      rows="4"
+      placeholder="Resumen del caso..."
+      [value]="resumo()"
+      (input)="resumo.set($any($event.target).value)"
+    ></textarea>
+  </div>
+
+  <div class="historia__campo">
+    <label class="historia__label">Diagnóstico Probable:</label>
+    <input
+      type="text"
+      class="historia__input"
+      placeholder="Diagnóstico principal..."
+      [value]="diagnosticoProvavel()"
+      (input)="diagnosticoProvavel.set($any($event.target).value)"
+    />
+  </div>
+
+  <div class="historia__campo">
+    <label class="historia__label">Diagnósticos Diferenciales:</label>
+    @for (dd of diagnosticosDiferenciais(); track $index) {
+      <div class="historia__diferencial">
+        <span class="historia__diferencial-num">{{ $index + 1 }}.</span>
+        <input
+          type="text"
+          class="historia__input"
+          [placeholder]="'Diagnóstico diferencial ' + ($index + 1)"
+          [value]="dd"
+          (input)="atualizarDiferencial($index, $any($event.target).value)"
+        />
+      </div>
+    }
+  </div>
+
+  <div class="historia__campo">
+    <label class="historia__label">Conducta:</label>
+    <textarea
+      class="historia__textarea"
+      rows="4"
+      placeholder="Plan de manejo..."
+      [value]="conduta()"
+      (input)="conduta.set($any($event.target).value)"
+    ></textarea>
+  </div>
+
+  <div class="historia__acoes">
+    <button
+      class="btn btn--secondary"
+      (click)="guardarRascunho()"
+      [disabled]="salvando() || finalizando()"
+    >
+      {{ salvando() ? 'Guardando...' : 'Guardar Borrador' }}
+    </button>
+    <button
+      class="btn btn--finalizar"
+      (click)="finalizar()"
+      [disabled]="!todosCamposPreenchidos || finalizando() || salvando()"
+    >
+      {{ finalizando() ? 'Finalizando...' : '›› Finalizar Atención ‹‹' }}
+    </button>
+  </div>
+</div>

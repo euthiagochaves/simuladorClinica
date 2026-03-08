@@ -1,0 +1,89 @@
+.painel-anamnese {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  height: 100%;
+
+  &__label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #444;
+    margin-bottom: 0.25rem;
+  }
+
+  &__input,
+  &__select {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    box-sizing: border-box;
+    margin-bottom: 0.5rem;
+
+    &:focus {
+      outline: none;
+      border-color: #1a5f7a;
+      box-shadow: 0 0 0 2px rgba(26, 95, 122, 0.2);
+    }
+  }
+
+  &__lista {
+    flex: 1;
+    overflow-y: auto;
+    max-height: 300px;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    text-align: left;
+    padding: 0.6rem 0.75rem;
+    background: none;
+    border: none;
+    border-bottom: 1px solid #f0f0f0;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: #333;
+    transition: background 0.15s;
+
+    &:hover {
+      background: #e3f2fd;
+    }
+
+    &--feita {
+      color: #888;
+      background: #f9f9f9;
+    }
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  &__check {
+    color: #2e7d32;
+    font-weight: 700;
+    font-size: 0.8rem;
+  }
+
+  &__info {
+    padding: 1rem;
+    text-align: center;
+    color: #888;
+    font-style: italic;
+    font-size: 0.9rem;
+  }
+
+  &__rodape {
+    font-size: 0.85rem;
+    color: #666;
+    padding-top: 0.5rem;
+    border-top: 1px solid #e0e0e0;
+  }
+}

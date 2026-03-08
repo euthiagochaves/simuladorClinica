@@ -1,0 +1,139 @@
+.atendimento {
+  min-height: 100vh;
+  background: #f5f7fa;
+  display: flex;
+  flex-direction: column;
+
+  &__navbar {
+    background: #1a5f7a;
+    color: #fff;
+    padding: 0 2rem;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-shrink: 0;
+  }
+
+  &__logo {
+    font-weight: 700;
+    font-size: 1.1rem;
+  }
+
+  &__sessao {
+    flex: 1;
+    text-align: center;
+    font-size: 0.9rem;
+    opacity: 0.85;
+  }
+
+  &__conteudo {
+    flex: 1;
+    padding: 1rem 1.5rem;
+    max-width: 1400px;
+    width: 100%;
+    margin: 0 auto;
+    box-sizing: border-box;
+  }
+
+  &__layout {
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    gap: 1rem;
+
+    @media (max-width: 900px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  &__chat-col {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  &__painel-col {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__col-titulo {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #555;
+    margin: 0 0 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  &__abas {
+    display: flex;
+    border-bottom: 2px solid #e0e0e0;
+  }
+
+  &__aba-conteudo {
+    padding: 1rem;
+    flex: 1;
+    overflow-y: auto;
+  }
+
+  &__erro {
+    padding: 2rem;
+    text-align: center;
+    color: #c0392b;
+
+    p { margin-bottom: 1rem; }
+  }
+}
+
+.aba {
+  flex: 1;
+  padding: 0.75rem 0.5rem;
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #666;
+  transition: color 0.2s, border-color 0.2s;
+  margin-bottom: -2px;
+
+  &:hover {
+    color: #1a5f7a;
+  }
+
+  &--ativa {
+    color: #1a5f7a;
+    border-bottom-color: #1a5f7a;
+  }
+}
+
+.btn {
+  padding: 0.4rem 0.9rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.2s;
+
+  &--voltar {
+    background: rgba(255,255,255,0.2);
+    color: #fff;
+
+    &:hover { background: rgba(255,255,255,0.3); }
+  }
+
+  &--secondary {
+    background: #e0e0e0;
+    color: #333;
+    display: inline-block;
+
+    &:hover { background: #ccc; }
+  }
+}

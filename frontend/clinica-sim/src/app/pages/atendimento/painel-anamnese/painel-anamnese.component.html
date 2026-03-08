@@ -1,0 +1,48 @@
+<div class="painel-anamnese">
+  <div class="painel-anamnese__filtros">
+    <label class="painel-anamnese__label">Buscar pregunta:</label>
+    <input
+      type="text"
+      class="painel-anamnese__input"
+      placeholder="Escriba para filtrar..."
+      [value]="filtroTexto()"
+      (input)="filtroTexto.set($any($event.target).value)"
+    />
+    <label class="painel-anamnese__label">Categoría:</label>
+    <select
+      class="painel-anamnese__select"
+      [value]="filtroCategoria()"
+      (change)="filtroCategoria.set($any($event.target).value)"
+    >
+      <option value="">Todas</option>
+      @for (cat of categorias; track cat) {
+        <option [value]="cat">{{ cat }}</option>
+      }
+    </select>
+  </div>
+
+  <div class="painel-anamnese__lista">
+    @if (carregando()) {
+      <p class="painel-anamnese__info">Cargando preguntas...</p>
+    } @else if (perguntasFiltradas.length === 0) {
+      <p class="painel-anamnese__info">No se encontraron preguntas.</p>
+    } @else {
+      @for (pergunta of perguntasFiltradas; track pergunta.id) {
+        <button
+          class="painel-anamnese__item"
+          [class.painel-anamnese__item--feita]="jaFoiFeita(pergunta.id)"
+          (click)="selecionarPergunta(pergunta)"
+        >
+          @if (jaFoiFeita(pergunta.id)) {
+            <span class="painel-anamnese__check">✓</span>
+          }
+          {{ pergunta.textoPergunta }}
+        </button>
+      }
+    }
+  </div>
+
+  <div class="painel-anamnese__rodape">
+    <span>Preguntas ya realizadas: <strong>{{ totalJaFeitas }}</strong></span>
+  </div>
+</div>

@@ -1,0 +1,91 @@
+<div class="resultado">
+  <nav class="resultado__navbar">
+    <span class="resultado__logo">🏥 ClinicaSim</span>
+    <a routerLink="/" class="btn btn--voltar">Volver al Inicio</a>
+  </nav>
+
+  <div class="resultado__conteudo">
+    @if (carregando()) {
+      <app-loading-spinner />
+    } @else if (erro()) {
+      <div class="resultado__erro">
+        <p>{{ erro() }}</p>
+        <a routerLink="/" class="btn btn--secondary">Volver al inicio</a>
+      </div>
+    } @else if (sessao()) {
+      <div class="resultado__exito">
+        <span class="resultado__check">✓</span>
+        <h1>Atención Finalizada Exitosamente</h1>
+        <p>Código de sesión: <strong>{{ sessao()!.codigo }}</strong></p>
+      </div>
+
+      <section class="seccion">
+        <h2 class="seccion__titulo">Datos del Paciente</h2>
+        <div class="seccion__grid">
+          <div><span class="label">Paciente:</span> {{ sessao()!.casoClinico?.nomePaciente }}</div>
+          <div><span class="label">Edad:</span> {{ sessao()!.casoClinico?.idadePaciente }} años</div>
+          <div><span class="label">Sexo:</span> {{ sessao()!.casoClinico?.sexoPaciente }}</div>
+          <div><span class="label">Triaje:</span> {{ sessao()!.casoClinico?.triagem }}</div>
+          <div class="seccion__full"><span class="label">Motivo de consulta:</span> {{ sessao()!.casoClinico?.queixaPrincipal }}</div>
+          <div><span class="label">Inicio:</span> {{ sessao()!.dataInicio | date:'dd/MM/yyyy HH:mm' }}</div>
+          @if (sessao()!.dataFim) {
+            <div><span class="label">Fin:</span> {{ sessao()!.dataFim | date:'dd/MM/yyyy HH:mm' }}</div>
+          }
+        </div>
+      </section>
+
+      <section class="seccion">
+        <h2 class="seccion__titulo">Registro de Interacciones</h2>
+        <div class="interacciones">
+          @if (eventos().length === 0) {
+            <p class="interacciones__vazio">No hay interacciones registradas.</p>
+          }
+          @for (evento of eventos(); track evento.id) {
+            <div class="interacciones__item">
+              <span class="interacciones__tempo">{{ formatarTempo(evento.segundosDesdeInicio) }}</span>
+              @if (evento.tipo === 'Pergunta') {
+                <span><strong>Médico:</strong> {{ evento.textoExibido }}</span>
+                <span class="interacciones__resposta"><strong>Paciente:</strong> {{ evento.textoResposta }}</span>
+              } @else if (evento.tipo === 'Achado') {
+                <span><strong>Examen Físico:</strong> {{ evento.textoExibido }}: {{ evento.textoResposta }}</span>
+              }
+            </div>
+          }
+        </div>
+      </section>
+
+      @if (nota()) {
+        <section class="seccion">
+          <h2 class="seccion__titulo">Historia Clínica</h2>
+          <div class="historia">
+            <div class="historia__campo">
+              <span class="label">Resumen:</span>
+              <p>{{ nota()!.textoResumo }}</p>
+            </div>
+            <div class="historia__campo">
+              <span class="label">Diagnóstico Probable:</span>
+              <p>{{ nota()!.textoDiagnosticoProvavel }}</p>
+            </div>
+            <div class="historia__campo">
+              <span class="label">Diagnósticos Diferenciales:</span>
+              <ol class="historia__lista">
+                @for (dd of nota()!.diagnosticosDiferenciais; track dd.ordemPrioridade) {
+                  <li>{{ dd.textoDiagnostico }}</li>
+                }
+              </ol>
+            </div>
+            <div class="historia__campo">
+              <span class="label">Conducta:</span>
+              <p>{{ nota()!.textoConduta }}</p>
+            </div>
+          </div>
+        </section>
+      }
+
+      <div class="resultado__acoes">
+        <button class="btn btn--pdf" (click)="gerarPdf()">📄 Generar PDF</button>
+        <a routerLink="/" class="btn btn--inicio">🏠 Volver al Inicio</a>
+      </div>
+    }
+  </div>
+</div>
