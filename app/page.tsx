@@ -1,3 +1,5 @@
+import Link from "next/link"
+
 export default function PreviewInicio() {
   const casos = [
     {
@@ -42,41 +44,44 @@ export default function PreviewInicio() {
     <div className="min-h-screen bg-[#f5f7fa] flex flex-col">
       {/* Navbar */}
       <nav className="flex items-center justify-between px-8 h-16 bg-[#1a5f7a] text-white shadow-md">
-        <a href="/" className="flex items-center gap-2 font-bold text-xl no-underline text-white">
-          <span className="text-2xl">🏥</span>
+        <Link href="/" className="flex items-center gap-2 font-bold text-xl no-underline text-white">
+          <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+          </svg>
           <span>ClinicaSim</span>
-        </a>
+        </Link>
         <div className="flex gap-6">
-          <a href="/" className="text-white/85 no-underline font-medium px-2 py-1 rounded hover:text-white hover:bg-white/15 bg-white/20">Inicio</a>
-          <a href="/admin" className="text-white/85 no-underline font-medium px-2 py-1 rounded hover:text-white hover:bg-white/15">Admin</a>
+          <Link href="/" className="text-white no-underline font-medium px-3 py-1.5 rounded bg-white/20">Inicio</Link>
+          <Link href="/atendimento" className="text-white/85 no-underline font-medium px-3 py-1.5 rounded hover:bg-white/15">Atendimento</Link>
+          <Link href="/admin" className="text-white/85 no-underline font-medium px-3 py-1.5 rounded hover:bg-white/15">Admin</Link>
         </div>
       </nav>
 
       {/* Header */}
       <header className="bg-gradient-to-br from-[#1a5f7a] to-[#2d9cdb] text-white py-12 px-8 text-center">
-        <h1 className="text-3xl font-bold mb-2">Bienvenido al Simulador Clínico</h1>
-        <p className="text-lg opacity-90">Seleccione un caso clínico para iniciar la atención</p>
+        <h1 className="text-3xl font-bold mb-2">Bem-vindo ao Simulador Clínico</h1>
+        <p className="text-lg opacity-90">Selecione um caso clínico para iniciar o atendimento</p>
       </header>
 
       {/* Conteúdo */}
-      <main className="max-w-[1100px] mx-auto p-8 flex-1">
+      <main className="max-w-5xl mx-auto p-8 flex-1 w-full">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {casos.map((caso) => (
             <div
               key={caso.id}
-              className="bg-white rounded-lg shadow-md p-6 flex flex-col gap-4 transition-shadow hover:shadow-lg"
+              className="bg-white rounded-xl shadow-md p-6 flex flex-col gap-4 transition-shadow hover:shadow-lg border border-gray-100"
             >
               <div className="flex-1">
-                <h2 className="text-sm font-bold text-[#1a5f7a] mb-3 uppercase tracking-wide">
+                <h2 className="text-base font-bold text-[#1a5f7a] mb-3 uppercase tracking-wide">
                   {caso.titulo}
                 </h2>
-                <div className="space-y-1.5 text-[15px] text-[#333]">
-                  <p><span className="font-semibold text-[#555] mr-1">Paciente:</span>{caso.nomePaciente}</p>
-                  <p><span className="font-semibold text-[#555] mr-1">Edad:</span>{caso.idadePaciente} años</p>
-                  <p><span className="font-semibold text-[#555] mr-1">Sexo:</span>{caso.sexoPaciente}</p>
-                  <p><span className="font-semibold text-[#555] mr-1">Motivo de consulta:</span>{caso.queixaPrincipal}</p>
-                  <p>
-                    <span className="font-semibold text-[#555] mr-1">Triaje:</span>
+                <div className="space-y-2 text-[15px] text-gray-700">
+                  <p><span className="font-semibold text-gray-500 mr-1">Paciente:</span>{caso.nomePaciente}</p>
+                  <p><span className="font-semibold text-gray-500 mr-1">Idade:</span>{caso.idadePaciente} anos</p>
+                  <p><span className="font-semibold text-gray-500 mr-1">Sexo:</span>{caso.sexoPaciente}</p>
+                  <p><span className="font-semibold text-gray-500 mr-1">Queixa principal:</span>{caso.queixaPrincipal}</p>
+                  <p className="flex items-center gap-2">
+                    <span className="font-semibold text-gray-500">Triagem:</span>
                     <span className={`inline-block px-2.5 py-0.5 rounded-full text-sm font-semibold ${
                       caso.triagem === 'urgente' ? 'bg-red-100 text-red-700' :
                       caso.triagem === 'prioritario' ? 'bg-orange-100 text-orange-700' :
@@ -87,12 +92,15 @@ export default function PreviewInicio() {
                   </p>
                 </div>
               </div>
-              <a
+              <Link
                 href="/atendimento"
-                className="w-full py-2.5 px-5 bg-[#1a5f7a] text-white text-center font-semibold rounded-md hover:bg-[#145069] transition-colors no-underline"
+                className="w-full py-2.5 px-5 bg-[#1a5f7a] text-white text-center font-semibold rounded-lg hover:bg-[#145069] transition-colors no-underline flex items-center justify-center gap-2"
               >
-                Iniciar Atención →
-              </a>
+                Iniciar Atendimento
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </Link>
             </div>
           ))}
         </div>
@@ -100,7 +108,7 @@ export default function PreviewInicio() {
 
       {/* Footer */}
       <footer className="bg-[#1a5f7a] text-white/80 text-center py-4 text-sm">
-        <p>ClinicaSim © 2026 - Plataforma de Simulación Clínica</p>
+        <p>ClinicaSim 2026 - Plataforma de Simulacao Clinica</p>
       </footer>
     </div>
   )
