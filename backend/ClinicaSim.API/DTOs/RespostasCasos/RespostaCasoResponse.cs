@@ -6,11 +6,11 @@ namespace ClinicaSim.API.DTOs.RespostasCasos;
 /// </summary>
 public record RespostaCasoResponse(
     /// <summary>Identificador único da resposta do caso.</summary>
-    Guid Id,
+    int Id,
     /// <summary>Identificador do caso clínico.</summary>
-    Guid CasoClinicoId,
+    int CasoClinicoId,
     /// <summary>Identificador da pergunta.</summary>
-    Guid PerguntaId,
+    int PerguntaId,
     /// <summary>Texto da resposta específica para este caso e pergunta.</summary>
     string TextoResposta,
     /// <summary>Indica se esta resposta está destacada como relevante.</summary>

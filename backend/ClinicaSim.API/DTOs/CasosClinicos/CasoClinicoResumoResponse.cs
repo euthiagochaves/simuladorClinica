@@ -5,7 +5,7 @@ namespace ClinicaSim.API.DTOs.CasosClinicos;
 /// </summary>
 public record CasoClinicoResumoResponse(
     /// <summary>Identificador único do caso clínico.</summary>
-    Guid Id,
+    int Id,
     /// <summary>Título do caso clínico.</summary>
     string Titulo,
     /// <summary>Nome do paciente fictício.</summary>

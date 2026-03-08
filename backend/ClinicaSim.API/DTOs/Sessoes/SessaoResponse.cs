@@ -7,11 +7,11 @@ namespace ClinicaSim.API.DTOs.Sessoes;
 /// </summary>
 public record SessaoResponse(
     /// <summary>Identificador único da sessão.</summary>
-    Guid Id,
+    int Id,
     /// <summary>Identificador do caso clínico associado.</summary>
-    Guid CasoClinicoId,
+    int CasoClinicoId,
     /// <summary>Identificador do aluno que realizou a sessão.</summary>
-    Guid? AlunoId,
+    int? AlunoId,
     /// <summary>Código único da sessão para compartilhamento.</summary>
     string CodigoSessao,
     /// <summary>Data e hora de início da sessão.</summary>

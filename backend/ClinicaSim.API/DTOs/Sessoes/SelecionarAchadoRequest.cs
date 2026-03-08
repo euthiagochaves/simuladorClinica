@@ -5,5 +5,5 @@ namespace ClinicaSim.API.DTOs.Sessoes;
 /// </summary>
 public record SelecionarAchadoRequest(
     /// <summary>Identificador do achado físico selecionado pelo aluno.</summary>
-    Guid AchadoFisicoId
+    int AchadoFisicoId
 );

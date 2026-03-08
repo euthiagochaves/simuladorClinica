@@ -5,9 +5,9 @@ namespace ClinicaSim.API.DTOs.RespostasCasos;
 /// </summary>
 public record CriarRespostaCasoRequest(
     /// <summary>Identificador do caso clínico.</summary>
-    Guid CasoClinicoId,
+    int CasoClinicoId,
     /// <summary>Identificador da pergunta.</summary>
-    Guid PerguntaId,
+    int PerguntaId,
     /// <summary>Texto da resposta específica para este caso e pergunta.</summary>
     string TextoResposta,
     /// <summary>Indica se esta resposta deve ser destacada como relevante.</summary>

@@ -5,9 +5,9 @@ namespace ClinicaSim.API.DTOs.AchadosFisicosCasos;
 /// </summary>
 public record CriarAchadoFisicoCasoRequest(
     /// <summary>Identificador do caso clínico.</summary>
-    Guid CasoClinicoId,
+    int CasoClinicoId,
     /// <summary>Identificador do achado físico.</summary>
-    Guid AchadoFisicoId,
+    int AchadoFisicoId,
     /// <summary>Indica se o achado está presente no paciente deste caso.</summary>
     bool Presente,
     /// <summary>Texto com detalhes adicionais sobre o achado neste caso (opcional).</summary>

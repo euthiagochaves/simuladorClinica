@@ -103,23 +103,12 @@ public class UsuarioService : IUsuarioService
     // =====================================================================
 
     /// <summary>
-    /// Converte um identificador inteiro em um Guid determinístico.
-    /// Utilizado para manter compatibilidade com os DTOs que usam Guid.
-    /// </summary>
-    private static Guid IntParaGuid(int id)
-    {
-        var bytes = new byte[16];
-        BitConverter.GetBytes(id).CopyTo(bytes, 0);
-        return new Guid(bytes);
-    }
-
-    /// <summary>
     /// Mapeia uma entidade <see cref="Usuario"/> para o DTO <see cref="UsuarioResponse"/>.
     /// </summary>
     private static UsuarioResponse MapearParaResponse(Usuario usuario)
     {
         return new UsuarioResponse(
-            Id: IntParaGuid(usuario.Id),
+            Id: usuario.Id,
             NomeCompleto: usuario.NomeCompleto,
             Email: usuario.Email,
             Perfil: usuario.Perfil.ToString(),

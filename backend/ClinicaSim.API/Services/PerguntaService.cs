@@ -106,22 +106,12 @@ public class PerguntaService : IPerguntaService
     // =====================================================================
 
     /// <summary>
-    /// Converte um identificador inteiro em um Guid determinístico.
-    /// </summary>
-    private static Guid IntParaGuid(int id)
-    {
-        var bytes = new byte[16];
-        BitConverter.GetBytes(id).CopyTo(bytes, 0);
-        return new Guid(bytes);
-    }
-
-    /// <summary>
     /// Mapeia uma entidade <see cref="Pergunta"/> para o DTO <see cref="PerguntaResponse"/>.
     /// </summary>
     private static PerguntaResponse MapearParaResponse(Pergunta pergunta)
     {
         return new PerguntaResponse(
-            Id: IntParaGuid(pergunta.Id),
+            Id: pergunta.Id,
             Texto: pergunta.Texto,
             Secao: pergunta.Secao,
             Categoria: pergunta.Categoria,

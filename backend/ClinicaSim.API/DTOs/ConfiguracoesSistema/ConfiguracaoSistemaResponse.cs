@@ -5,7 +5,7 @@ namespace ClinicaSim.API.DTOs.ConfiguracoesSistema;
 /// </summary>
 public record ConfiguracaoSistemaResponse(
     /// <summary>Identificador único da configuração.</summary>
-    Guid Id,
+    int Id,
     /// <summary>Chave única da configuração (ex.: "TempoMaximoSessao").</summary>
     string Chave,
     /// <summary>Valor da configuração.</summary>

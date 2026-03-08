@@ -35,7 +35,7 @@ public class SessaoService : ISessaoService
     /// <inheritdoc />
     public async Task<SessaoResponse> IniciarSessaoAsync(IniciarSessaoRequest request)
     {
-        var casoClinicoId = GuidParaInt(request.CasoClinicoId);
+        var casoClinicoId = request.CasoClinicoId;
 
         // Verifica se o caso clinico existe
         var casoExiste = await _contexto.CasosClinicos.AnyAsync(c => c.Id == casoClinicoId);
@@ -48,7 +48,7 @@ public class SessaoService : ISessaoService
         var sessao = new Sessao
         {
             CasoClinicoId = casoClinicoId,
-            AlunoId = request.AlunoId.HasValue ? GuidParaInt(request.AlunoId.Value) : null,
+            AlunoId = request.AlunoId.HasValue ? request.AlunoId.Value : null,
             CodigoSessao = codigoSessao,
             IniciadoEm = agora,
             Status = StatusSessao.Iniciada
@@ -103,7 +103,7 @@ public class SessaoService : ISessaoService
         if (sessao is null)
             throw new InvalidOperationException($"Sessao com Id {sessaoId} nao encontrada.");
 
-        var perguntaId = GuidParaInt(request.PerguntaId);
+        var perguntaId = request.PerguntaId;
 
         // Busca a pergunta no banco global
         var pergunta = await _contexto.Perguntas
@@ -175,7 +175,7 @@ public class SessaoService : ISessaoService
         if (sessao is null)
             throw new InvalidOperationException($"Sessao com Id {sessaoId} nao encontrada.");
 
-        var achadoFisicoId = GuidParaInt(request.AchadoFisicoId);
+        var achadoFisicoId = request.AchadoFisicoId;
 
         // Busca o achado fisico no banco global
         var achadoFisico = await _contexto.AchadosFisicos
@@ -315,24 +315,6 @@ public class SessaoService : ISessaoService
     }
 
     /// <summary>
-    /// Converte um identificador inteiro em um Guid deterministico.
-    /// </summary>
-    private static Guid IntParaGuid(int id)
-    {
-        var bytes = new byte[16];
-        BitConverter.GetBytes(id).CopyTo(bytes, 0);
-        return new Guid(bytes);
-    }
-
-    /// <summary>
-    /// Converte um Guid deterministico de volta para inteiro.
-    /// </summary>
-    private static int GuidParaInt(Guid guid)
-    {
-        return BitConverter.ToInt32(guid.ToByteArray(), 0);
-    }
-
-    /// <summary>
     /// Mapeia uma entidade <see cref="Sessao"/> para o DTO <see cref="SessaoResponse"/>.
     /// Inclui os dados resumidos do caso clinico associado.
     /// </summary>
@@ -342,7 +324,7 @@ public class SessaoService : ISessaoService
         if (sessao.CasoClinico != null)
         {
             casoResumo = new CasoClinicoResumoResponse(
-                Id: IntParaGuid(sessao.CasoClinico.Id),
+                Id: sessao.CasoClinico.Id,
                 Titulo: sessao.CasoClinico.Titulo,
                 NomePaciente: sessao.CasoClinico.NomePaciente,
                 Idade: sessao.CasoClinico.Idade,
@@ -354,9 +336,9 @@ public class SessaoService : ISessaoService
         }
 
         return new SessaoResponse(
-            Id: IntParaGuid(sessao.Id),
-            CasoClinicoId: IntParaGuid(sessao.CasoClinicoId),
-            AlunoId: sessao.AlunoId.HasValue ? IntParaGuid(sessao.AlunoId.Value) : null,
+            Id: sessao.Id,
+            CasoClinicoId: sessao.CasoClinicoId,
+            AlunoId: sessao.AlunoId.HasValue ? sessao.AlunoId.Value : null,
             CodigoSessao: sessao.CodigoSessao,
             IniciadoEm: sessao.IniciadoEm,
             FinalizadoEm: sessao.FinalizadoEm,
@@ -371,7 +353,7 @@ public class SessaoService : ISessaoService
     private static EventoSessaoResponse MapearEventoParaResponse(EventoSessao evento)
     {
         return new EventoSessaoResponse(
-            Id: IntParaGuid(evento.Id),
+            Id: evento.Id,
             Tipo: evento.Tipo.ToString(),
             TextoExibido: evento.TextoExibido,
             TextoResposta: evento.TextoResposta,

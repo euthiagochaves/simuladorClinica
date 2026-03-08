@@ -66,22 +66,12 @@ public class ConfiguracaoSistemaService : IConfiguracaoSistemaService
     // =====================================================================
 
     /// <summary>
-    /// Converte um identificador inteiro em um Guid deterministico.
-    /// </summary>
-    private static Guid IntParaGuid(int id)
-    {
-        var bytes = new byte[16];
-        BitConverter.GetBytes(id).CopyTo(bytes, 0);
-        return new Guid(bytes);
-    }
-
-    /// <summary>
     /// Mapeia uma entidade <see cref="ConfiguracaoSistema"/> para o DTO <see cref="ConfiguracaoSistemaResponse"/>.
     /// </summary>
     private static ConfiguracaoSistemaResponse MapearParaResponse(ConfiguracaoSistema configuracao)
     {
         return new ConfiguracaoSistemaResponse(
-            Id: IntParaGuid(configuracao.Id),
+            Id: configuracao.Id,
             Chave: configuracao.Chave,
             Valor: configuracao.Valor,
             Descricao: configuracao.Descricao

@@ -104,22 +104,12 @@ public class AchadoFisicoService : IAchadoFisicoService
     // =====================================================================
 
     /// <summary>
-    /// Converte um identificador inteiro em um Guid determinístico.
-    /// </summary>
-    private static Guid IntParaGuid(int id)
-    {
-        var bytes = new byte[16];
-        BitConverter.GetBytes(id).CopyTo(bytes, 0);
-        return new Guid(bytes);
-    }
-
-    /// <summary>
     /// Mapeia uma entidade <see cref="AchadoFisico"/> para o DTO <see cref="AchadoFisicoResponse"/>.
     /// </summary>
     private static AchadoFisicoResponse MapearParaResponse(AchadoFisico achado)
     {
         return new AchadoFisicoResponse(
-            Id: IntParaGuid(achado.Id),
+            Id: achado.Id,
             Nome: achado.Nome,
             SistemaCategoria: achado.SistemaCategoria,
             Descricao: achado.Descricao,

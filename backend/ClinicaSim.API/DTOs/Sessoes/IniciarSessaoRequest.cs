@@ -5,7 +5,7 @@ namespace ClinicaSim.API.DTOs.Sessoes;
 /// </summary>
 public record IniciarSessaoRequest(
     /// <summary>Identificador do caso clínico a ser simulado.</summary>
-    Guid CasoClinicoId,
+    int CasoClinicoId,
     /// <summary>Identificador do aluno que está realizando a sessão (opcional).</summary>
-    Guid? AlunoId
+    int? AlunoId
 );

@@ -19,5 +19,5 @@ public record CriarCasoClinicoRequest(
     /// <summary>Resumo geral do caso clínico (opcional).</summary>
     string? Resumo,
     /// <summary>Identificador do usuário que criou o caso (opcional).</summary>
-    Guid? CriadoPorUsuarioId
+    int? CriadoPorUsuarioId
 );

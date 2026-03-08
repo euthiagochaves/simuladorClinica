@@ -112,16 +112,6 @@ public class NotaClinicaService : INotaClinicaService
     // =====================================================================
 
     /// <summary>
-    /// Converte um identificador inteiro em um Guid deterministico.
-    /// </summary>
-    private static Guid IntParaGuid(int id)
-    {
-        var bytes = new byte[16];
-        BitConverter.GetBytes(id).CopyTo(bytes, 0);
-        return new Guid(bytes);
-    }
-
-    /// <summary>
     /// Mapeia uma entidade <see cref="NotaClinica"/> e seus diagnosticos para o DTO <see cref="NotaClinicaResponse"/>.
     /// </summary>
     private static NotaClinicaResponse MapearParaResponse(NotaClinica nota, List<DiagnosticoDiferencial> diagnosticos)
@@ -135,7 +125,7 @@ public class NotaClinicaService : INotaClinicaService
             .ToList();
 
         return new NotaClinicaResponse(
-            Id: IntParaGuid(nota.Id),
+            Id: nota.Id,
             TextoResumo: nota.TextoResumo,
             TextoDiagnosticoProvavel: nota.TextoDiagnosticoProvavel,
             TextoConduta: nota.TextoConduta,

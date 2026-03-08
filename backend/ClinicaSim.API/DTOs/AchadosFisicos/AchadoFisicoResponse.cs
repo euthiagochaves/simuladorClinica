@@ -5,7 +5,7 @@ namespace ClinicaSim.API.DTOs.AchadosFisicos;
 /// </summary>
 public record AchadoFisicoResponse(
     /// <summary>Identificador único do achado físico.</summary>
-    Guid Id,
+    int Id,
     /// <summary>Nome do achado físico.</summary>
     string Nome,
     /// <summary>Sistema ou categoria do achado.</summary>

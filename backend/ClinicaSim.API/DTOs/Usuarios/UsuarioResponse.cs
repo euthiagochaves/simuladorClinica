@@ -5,7 +5,7 @@ namespace ClinicaSim.API.DTOs.Usuarios;
 /// </summary>
 public record UsuarioResponse(
     /// <summary>Identificador único do usuário.</summary>
-    Guid Id,
+    int Id,
     /// <summary>Nome completo do usuário.</summary>
     string NomeCompleto,
     /// <summary>E-mail do usuário.</summary>

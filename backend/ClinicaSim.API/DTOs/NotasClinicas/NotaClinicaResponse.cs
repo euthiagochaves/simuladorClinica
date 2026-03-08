@@ -5,7 +5,7 @@ namespace ClinicaSim.API.DTOs.NotasClinicas;
 /// </summary>
 public record NotaClinicaResponse(
     /// <summary>Identificador único da nota clínica.</summary>
-    Guid Id,
+    int Id,
     /// <summary>Texto do resumo clínico elaborado pelo aluno.</summary>
     string TextoResumo,
     /// <summary>Texto do diagnóstico provável elaborado pelo aluno.</summary>

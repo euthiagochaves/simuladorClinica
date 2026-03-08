@@ -5,7 +5,7 @@ namespace ClinicaSim.API.DTOs.Perguntas;
 /// </summary>
 public record PerguntaResponse(
     /// <summary>Identificador único da pergunta.</summary>
-    Guid Id,
+    int Id,
     /// <summary>Texto da pergunta.</summary>
     string Texto,
     /// <summary>Seção à qual a pergunta pertence.</summary>

@@ -5,7 +5,7 @@ namespace ClinicaSim.API.DTOs.Sessoes;
 /// </summary>
 public record EventoSessaoResponse(
     /// <summary>Identificador único do evento.</summary>
-    Guid Id,
+    int Id,
     /// <summary>Tipo do evento (ex.: "Pergunta", "AchadoFisico").</summary>
     string Tipo,
     /// <summary>Texto exibido ao aluno (texto da pergunta ou nome do achado).</summary>

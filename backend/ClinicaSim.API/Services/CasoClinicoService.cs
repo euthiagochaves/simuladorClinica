@@ -64,7 +64,7 @@ public class CasoClinicoService : ICasoClinicoService
             Triagem = request.Triagem,
             Resumo = request.Resumo,
             CriadoPorUsuarioId = request.CriadoPorUsuarioId.HasValue
-                ? GuidParaInt(request.CriadoPorUsuarioId.Value)
+                ? request.CriadoPorUsuarioId.Value
                 : null,
             Ativo = true
         };
@@ -129,7 +129,7 @@ public class CasoClinicoService : ICasoClinicoService
         var resposta = new RespostaCasoPergunta
         {
             CasoClinicoId = casoClinicoId,
-            PerguntaId = GuidParaInt(request.PerguntaId),
+            PerguntaId = request.PerguntaId,
             TextoResposta = request.TextoResposta,
             Destacada = request.Destacada
         };
@@ -162,7 +162,7 @@ public class CasoClinicoService : ICasoClinicoService
         var achado = new AchadoFisicoCaso
         {
             CasoClinicoId = casoClinicoId,
-            AchadoFisicoId = GuidParaInt(request.AchadoFisicoId),
+            AchadoFisicoId = request.AchadoFisicoId,
             Presente = request.Presente,
             TextoDetalhe = request.TextoDetalhe,
             Destacado = request.Destacado
@@ -182,30 +182,12 @@ public class CasoClinicoService : ICasoClinicoService
     // =====================================================================
 
     /// <summary>
-    /// Converte um identificador inteiro em um Guid deterministico.
-    /// </summary>
-    private static Guid IntParaGuid(int id)
-    {
-        var bytes = new byte[16];
-        BitConverter.GetBytes(id).CopyTo(bytes, 0);
-        return new Guid(bytes);
-    }
-
-    /// <summary>
-    /// Converte um Guid deterministico de volta para inteiro.
-    /// </summary>
-    private static int GuidParaInt(Guid guid)
-    {
-        return BitConverter.ToInt32(guid.ToByteArray(), 0);
-    }
-
-    /// <summary>
     /// Mapeia uma entidade <see cref="CasoClinico"/> para o DTO <see cref="CasoClinicoResponse"/>.
     /// </summary>
     private static CasoClinicoResponse MapearParaResponse(CasoClinico caso)
     {
         return new CasoClinicoResponse(
-            Id: IntParaGuid(caso.Id),
+            Id: caso.Id,
             Titulo: caso.Titulo,
             NomePaciente: caso.NomePaciente,
             Idade: caso.Idade,
@@ -224,7 +206,7 @@ public class CasoClinicoService : ICasoClinicoService
     private static CasoClinicoResumoResponse MapearParaResumoResponse(CasoClinico caso)
     {
         return new CasoClinicoResumoResponse(
-            Id: IntParaGuid(caso.Id),
+            Id: caso.Id,
             Titulo: caso.Titulo,
             NomePaciente: caso.NomePaciente,
             Idade: caso.Idade,
@@ -241,9 +223,9 @@ public class CasoClinicoService : ICasoClinicoService
     private static RespostaCasoResponse MapearRespostaParaResponse(RespostaCasoPergunta resposta)
     {
         return new RespostaCasoResponse(
-            Id: IntParaGuid(resposta.Id),
-            CasoClinicoId: IntParaGuid(resposta.CasoClinicoId),
-            PerguntaId: IntParaGuid(resposta.PerguntaId),
+            Id: resposta.Id,
+            CasoClinicoId: resposta.CasoClinicoId,
+            PerguntaId: resposta.PerguntaId,
             TextoResposta: resposta.TextoResposta,
             Destacada: resposta.Destacada,
             TextoPergunta: resposta.Pergunta?.Texto
@@ -256,9 +238,9 @@ public class CasoClinicoService : ICasoClinicoService
     private static AchadoFisicoCasoResponse MapearAchadoCasoParaResponse(AchadoFisicoCaso achado)
     {
         return new AchadoFisicoCasoResponse(
-            Id: IntParaGuid(achado.Id),
-            CasoClinicoId: IntParaGuid(achado.CasoClinicoId),
-            AchadoFisicoId: IntParaGuid(achado.AchadoFisicoId),
+            Id: achado.Id,
+            CasoClinicoId: achado.CasoClinicoId,
+            AchadoFisicoId: achado.AchadoFisicoId,
             Presente: achado.Presente,
             TextoDetalhe: achado.TextoDetalhe,
             Destacado: achado.Destacado,

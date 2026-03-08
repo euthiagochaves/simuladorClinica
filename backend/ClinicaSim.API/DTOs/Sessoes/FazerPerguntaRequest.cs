@@ -5,5 +5,5 @@ namespace ClinicaSim.API.DTOs.Sessoes;
 /// </summary>
 public record FazerPerguntaRequest(
     /// <summary>Identificador da pergunta selecionada pelo aluno.</summary>
-    Guid PerguntaId
+    int PerguntaId
 );
