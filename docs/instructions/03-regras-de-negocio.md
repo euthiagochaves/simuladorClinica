@@ -29,9 +29,9 @@ O banco global representa um **paciente padrão sem patologia**. Isso vale tanto
 ### Fluxo de Resolução de Resposta (Anamnese)
 ```
 1. Aluno seleciona pergunta
-2. Sistema procura resposta específica do caso (CaseQuestionAnswers)
-3. Se não existir → usa resposta padrão global (QuestionBank.DefaultAnswer)
-4. Registra evento (SessionEvent tipo QuestionClicked)
+2. Sistema procura resposta específica do caso (RespostaCasoPergunta)
+3. Se não existir → usa resposta padrão global (Pergunta.RespostaPadrao)
+4. Registra evento (EventoSessao tipo PerguntaClicada)
 5. Retorna resposta ao aluno (exibe no chat)
 ```
 
@@ -47,9 +47,9 @@ O banco global representa um **paciente padrão sem patologia**. Isso vale tanto
 ### Fluxo de Resolução (Exame Físico)
 ```
 1. Aluno seleciona achado
-2. Sistema verifica se existe achado específico do caso (CasePhysicalFindings)
-3. Se não existir → usa resultado padrão global (PhysicalFindingBank.DefaultResultText)
-4. Registra evento (SessionEvent tipo FindingSelected)
+2. Sistema verifica se existe achado específico do caso (AchadoFisicoCaso)
+3. Se não existir → usa resultado padrão global (AchadoFisico.ResultadoPadrao)
+4. Registra evento (EventoSessao tipo AchadoSelecionado)
 5. Retorna resultado ao aluno (exibe no chat)
 ```
 
@@ -57,10 +57,10 @@ O banco global representa um **paciente padrão sem patologia**. Isso vale tanto
 
 ## Sessão de Atendimento
 
-- Cada atendimento gera uma **sessão clínica** (`Session`)
-- A sessão registra: caso utilizado, início, fim e status (Started, InProgress, Finished)
-- Possui um **SessionCode único** para recuperação/exportação
-- Cada interação gera um **SessionEvent** persistido no banco
+- Cada atendimento gera uma **sessão clínica** (`Sessao`)
+- A sessão registra: caso utilizado, início, fim e status (Iniciada, EmAndamento, Finalizada)
+- Possui um **CodigoSessao único** para recuperação/exportação
+- Cada interação gera um **EventoSessao** persistido no banco
 
 ---
 
@@ -115,5 +115,5 @@ O PDF deve conter:
 
 - Importação em massa de casos por arquivo YAML
 - Fluxo: professor baixa template → preenche → envia → sistema cria/atualiza caso
-- Logs de importação registrados em `CaseImportLogs`
+- Logs de importação registrados em `LogImportacaoCaso`
 - Download de template YAML é funcionalidade futura (não MVP)

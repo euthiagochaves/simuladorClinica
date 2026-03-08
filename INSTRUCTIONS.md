@@ -5,6 +5,14 @@ Permite que alunos pratiquem o atendimento de pacientes simulados em ambiente co
 
 **Não é um prontuário médico real.**
 
+## Status do Projeto
+
+| Camada   | Status         | Detalhes                                     |
+|----------|----------------|----------------------------------------------|
+| Backend  | Implementado   | 15 entidades, 8 services, 7 controllers, 29 DTOs |
+| Frontend | Scaffolding    | Angular 21 criado, sem componentes ainda      |
+| Banco    | Modelado       | DbContext pronto, falta criar migrations      |
+
 ## Documentação
 
 Cada aspecto do projeto está documentado em arquivo separado:
@@ -12,9 +20,10 @@ Cada aspecto do projeto está documentado em arquivo separado:
 | Arquivo | Conteúdo |
 |---------|----------|
 | [Visão Geral](docs/instructions/01-visao-geral.md) | Objetivo do sistema, perfis de usuário, princípios |
-| [Stack e Estrutura](docs/instructions/02-stack-e-estrutura.md) | Tecnologias, estrutura de pastas, como rodar |
+| [Stack e Estrutura](docs/instructions/02-stack-e-estrutura.md) | Tecnologias (.NET 10, Angular 21), estrutura de pastas, como rodar |
 | [Regras de Negócio](docs/instructions/03-regras-de-negocio.md) | Bancos globais, sobrescrita, sessão, fluxos |
-| [Modelo de Dados](docs/instructions/04-modelo-de-dados.md) | Tabelas, campos, relacionamentos |
+| [Modelo de Dados](docs/instructions/04-modelo-de-dados.md) | 15 entidades em PT-BR, enums, relacionamentos |
 | [Interface (UI)](docs/instructions/05-interface-ui.md) | Layout, abas, chat clínico, idioma espanhol |
-| [Convenções de Código](docs/instructions/06-convencoes-de-codigo.md) | Naming, padrões backend/frontend |
+| [Convenções de Código](docs/instructions/06-convencoes-de-codigo.md) | Naming PT-BR, padrões backend/frontend |
 | [Restrições do MVP](docs/instructions/07-restricoes-mvp.md) | O que faz e o que NÃO faz parte do MVP |
+| [Endpoints da API](docs/instructions/08-endpoints-api.md) | Rotas REST, métodos HTTP, descrições |

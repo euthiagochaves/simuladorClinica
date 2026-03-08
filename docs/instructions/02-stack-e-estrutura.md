@@ -2,12 +2,12 @@
 
 ## Stack
 
-| Camada   | Tecnologia                              |
-|----------|-----------------------------------------|
-| Backend  | .NET 8 Web API + Entity Framework Core  |
-| Frontend | Angular SPA (TypeScript, SCSS)          |
-| Banco    | PostgreSQL (Supabase)                   |
-| ORM      | Entity Framework Core (Code-First)      |
+| Camada   | Tecnologia                                        |
+|----------|---------------------------------------------------|
+| Backend  | .NET 10 Web API + Entity Framework Core 9.0.3     |
+| Frontend | Angular 21 SPA (TypeScript, SCSS)                 |
+| Banco    | PostgreSQL (Supabase) via Npgsql 9.0.4            |
+| ORM      | Entity Framework Core (Code-First, Fluent API)    |
 
 ---
 
@@ -26,17 +26,37 @@ simuladorClinica/
 │   ├── ClinicaSim.sln
 │   └── ClinicaSim.API/
 │       ├── ClinicaSim.API.csproj
-│       ├── Program.cs              ← entry point
+│       ├── Program.cs              ← entry point + DI + CORS + Swagger
 │       ├── appsettings.json        ← configurações (connection string, etc.)
 │       ├── appsettings.Development.json
-│       ├── Controllers/            ← endpoints da API REST
+│       ├── Controllers/            ← 7 controllers REST
+│       │   ├── UsuariosController.cs
+│       │   ├── CasosClinicosController.cs
+│       │   ├── PerguntasController.cs
+│       │   ├── AchadosFisicosController.cs
+│       │   ├── SessoesController.cs
+│       │   ├── ImportacaoController.cs
+│       │   └── ConfiguracoesSistemaController.cs
 │       ├── Models/
-│       │   └── Entities/           ← entidades do EF Core (mapeiam tabelas)
-│       ├── Data/                   ← DbContext e configurações do EF
-│       ├── Services/               ← lógica de negócio
-│       └── DTOs/                   ← objetos de transferência (request/response)
+│       │   ├── Entities/           ← 15 entidades EF Core (PT-BR)
+│       │   └── Enums/              ← 5 enums (PerfilUsuario, StatusSessao, etc.)
+│       ├── Data/
+│       │   └── ClinicaSimDbContext.cs  ← DbContext com Fluent API + snake_case
+│       ├── Services/               ← 8 services com lógica de negócio
+│       │   └── Interfaces/         ← 8 interfaces (IXxxService)
+│       └── DTOs/                   ← 29 DTOs organizados por feature
+│           ├── Usuarios/
+│           ├── CasosClinicos/
+│           ├── Perguntas/
+│           ├── AchadosFisicos/
+│           ├── AchadosFisicosCasos/
+│           ├── RespostasCasos/
+│           ├── Sessoes/
+│           ├── NotasClinicas/
+│           ├── Importacao/
+│           └── ConfiguracoesSistema/
 └── frontend/
-    └── clinica-sim/                ← projeto Angular
+    └── clinica-sim/                ← projeto Angular 21
         ├── angular.json
         ├── package.json
         ├── src/

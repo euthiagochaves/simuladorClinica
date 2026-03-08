@@ -2,236 +2,265 @@
 
 ## Visão Geral
 
-O sistema possui **15 tabelas** no PostgreSQL (Supabase). Todas usam Entity Framework Core (Code-First).
+O sistema possui **15 tabelas** no PostgreSQL (Supabase). Todas usam Entity Framework Core (Code-First) com Fluent API.
+
+**Convenção**: nomes de classes e propriedades em **português brasileiro (PT-BR)**. No banco PostgreSQL, todas as tabelas e colunas usam **snake_case** (configurado via Fluent API no DbContext).
 
 ---
 
-## Tabelas
+## Entidades (Models/Entities/)
 
-### USERS
+### Usuario
 Usuários do sistema (futura autenticação).
 
-| Campo        | Tipo     | Observações                    |
-|--------------|----------|--------------------------------|
-| Id           | int (PK) | Identificador único            |
-| FullName     | string   | Obrigatório                    |
-| Email        | string   | Pode ser único                 |
-| PasswordHash | string   | Para futuro login              |
-| Role         | string   | Student, Teacher, Admin        |
-| Active       | bool     |                                |
-| CreatedAt    | datetime |                                |
-| UpdatedAt    | datetime |                                |
+| Propriedade   | Tipo            | Observações                         |
+|---------------|-----------------|-------------------------------------|
+| Id            | int (PK)        | Identificador único                 |
+| NomeCompleto  | string          | Obrigatório                         |
+| Email         | string          | Único                               |
+| SenhaHash     | string?         | Para futuro login                   |
+| Perfil        | PerfilUsuario   | Aluno, Professor, Administrador     |
+| Ativo         | bool            | Default: true                       |
+| CriadoEm      | DateTime        | Auto-preenchido                     |
+| AtualizadoEm  | DateTime        | Auto-atualizado                     |
 
-### CLINICAL_CASES
+### CasoClinico
 Casos clínicos simulados.
 
-| Campo           | Tipo     | Observações                |
-|-----------------|----------|----------------------------|
-| Id              | int (PK) |                            |
-| Title           | string   | Título curto               |
-| PatientName     | string   | Nome fictício              |
-| Age             | int      |                            |
-| Sex             | string   |                            |
-| ChiefComplaint  | string   | Queixa principal (obrigatório) |
-| Triage          | string   | Classificação de triagem   |
-| Summary         | string   | Resumo interno (para professor) |
-| Active          | bool     |                            |
-| CreatedAt       | datetime |                            |
-| UpdatedAt       | datetime |                            |
-| CreatedByUserId | int (FK) | FK para Users (opcional)   |
+| Propriedade         | Tipo     | Observações                    |
+|---------------------|----------|--------------------------------|
+| Id                  | int (PK) |                                |
+| Titulo              | string   | Título curto                   |
+| NomePaciente        | string   | Nome fictício                  |
+| Idade               | int      |                                |
+| Sexo                | string   |                                |
+| QueixaPrincipal     | string   | Obrigatório                    |
+| Triagem             | string?  | Classificação de triagem       |
+| Resumo              | string?  | Resumo interno (para professor)|
+| Ativo               | bool     | Default: true                  |
+| CriadoPorUsuarioId  | int? (FK)| FK para Usuario (opcional)     |
+| CriadoEm            | DateTime |                                |
+| AtualizadoEm        | DateTime |                                |
 
-### QUESTION_BANK
+### Pergunta
 Banco global de perguntas de anamnese.
 
-| Campo         | Tipo     | Observações                          |
-|---------------|----------|--------------------------------------|
-| Id            | int (PK) |                                      |
-| Text          | string   | Texto da pergunta (ordenação alfabética) |
-| Section       | string   | Ex.: Anamnesis                       |
-| Category      | string   | Ex.: dolor, fiebre, antecedentes     |
-| DefaultAnswer | string   | Resposta padrão (paciente saudável)  |
-| Active        | bool     |                                      |
-| SortOrder     | int      | Ordem opcional                       |
-| CreatedAt     | datetime |                                      |
-| UpdatedAt     | datetime |                                      |
+| Propriedade    | Tipo     | Observações                          |
+|----------------|----------|--------------------------------------|
+| Id             | int (PK) |                                      |
+| Texto          | string   | Texto da pergunta                    |
+| Secao          | string?  | Ex.: Anamnesis                       |
+| Categoria      | string?  | Ex.: dolor, fiebre, antecedentes     |
+| RespostaPadrao | string   | Resposta padrão (paciente saudável)  |
+| Ativo          | bool     | Default: true                        |
+| OrdemExibicao  | int      | Ordem opcional                       |
+| CriadoEm       | DateTime |                                      |
+| AtualizadoEm   | DateTime |                                      |
 
-### CASE_QUESTION_ANSWERS
+### RespostaCasoPergunta
 Respostas específicas de um caso para perguntas globais.
 
-| Campo         | Tipo     | Observações                        |
-|---------------|----------|------------------------------------|
-| Id            | int (PK) |                                    |
-| CaseId        | int (FK) | FK para ClinicalCases              |
-| QuestionId    | int (FK) | FK para QuestionBank               |
-| AnswerText    | string   | Resposta específica (sobrescreve)  |
-| IsHighlighted | bool     | Se é relevante/patológica          |
-| CreatedAt     | datetime |                                    |
-| UpdatedAt     | datetime |                                    |
+| Propriedade    | Tipo     | Observações                        |
+|----------------|----------|------------------------------------|
+| Id             | int (PK) |                                    |
+| CasoClinicoId  | int (FK) | FK para CasoClinico                |
+| PerguntaId     | int (FK) | FK para Pergunta                   |
+| TextoResposta  | string   | Resposta específica (sobrescreve)  |
+| Destacada      | bool     | Se é relevante/patológica          |
+| CriadoEm       | DateTime |                                    |
+| AtualizadoEm   | DateTime |                                    |
 
-### PHYSICAL_FINDING_BANK
+**Constraint**: índice único em (CasoClinicoId, PerguntaId).
+
+### AchadoFisico
 Banco global de achados/manobras de exame físico.
 
-| Campo             | Tipo     | Observações                          |
+| Propriedade       | Tipo     | Observações                          |
 |-------------------|----------|--------------------------------------|
 | Id                | int (PK) |                                      |
-| Name              | string   | Nome do achado ou manobra            |
-| SystemCategory    | string   | Respiratorio, Cardiovascular, etc.   |
-| Description       | string   | Descrição opcional                   |
-| DefaultResultText | string   | Resultado padrão (paciente saudável) |
-| Active            | bool     |                                      |
-| CreatedAt         | datetime |                                      |
-| UpdatedAt         | datetime |                                      |
+| Nome              | string   | Nome do achado ou manobra            |
+| SistemaCategoria  | string?  | Respiratorio, Cardiovascular, etc.   |
+| Descricao         | string?  | Descrição opcional                   |
+| ResultadoPadrao   | string   | Resultado padrão (paciente saudável) |
+| Ativo             | bool     | Default: true                        |
+| CriadoEm          | DateTime |                                      |
+| AtualizadoEm      | DateTime |                                      |
 
-### CASE_PHYSICAL_FINDINGS
+### AchadoFisicoCaso
 Achados específicos de um caso clínico.
 
-| Campo         | Tipo     | Observações                    |
-|---------------|----------|--------------------------------|
-| Id            | int (PK) |                                |
-| CaseId        | int (FK) | FK para ClinicalCases          |
-| FindingId     | int (FK) | FK para PhysicalFindingBank    |
-| Present       | bool     | Se o achado está presente      |
-| DetailText    | string   | Resultado específico (opcional)|
-| IsHighlighted | bool     | Se é relevante/patológico      |
-| CreatedAt     | datetime |                                |
-| UpdatedAt     | datetime |                                |
+| Propriedade    | Tipo     | Observações                    |
+|----------------|----------|--------------------------------|
+| Id             | int (PK) |                                |
+| CasoClinicoId  | int (FK) | FK para CasoClinico            |
+| AchadoFisicoId | int (FK) | FK para AchadoFisico           |
+| Presente       | bool     | Se o achado está presente      |
+| TextoDetalhe   | string?  | Resultado específico           |
+| Destacado      | bool     | Se é relevante/patológico      |
+| CriadoEm       | DateTime |                                |
+| AtualizadoEm   | DateTime |                                |
 
-### SESSIONS
+**Constraint**: índice único em (CasoClinicoId, AchadoFisicoId).
+
+### Sessao
 Sessões de atendimento dos alunos.
 
-| Campo       | Tipo     | Observações                          |
-|-------------|----------|--------------------------------------|
-| Id          | int (PK) |                                      |
-| CaseId      | int (FK) | FK para ClinicalCases                |
-| StudentId   | int (FK) | Pode ser nulo no MVP                 |
-| SessionCode | string   | Código único (para recuperação/PDF)  |
-| StartedAt   | datetime |                                      |
-| FinishedAt  | datetime |                                      |
-| Status      | string   | Started, InProgress, Finished        |
-| CreatedAt   | datetime |                                      |
-| UpdatedAt   | datetime |                                      |
+| Propriedade    | Tipo          | Observações                          |
+|----------------|---------------|--------------------------------------|
+| Id             | int (PK)      |                                      |
+| CasoClinicoId  | int (FK)      | FK para CasoClinico                  |
+| AlunoId        | int? (FK)     | FK para Usuario (nulo no MVP)        |
+| CodigoSessao   | string        | Código único (para recuperação/PDF)  |
+| IniciadoEm     | DateTime      |                                      |
+| FinalizadoEm   | DateTime?     |                                      |
+| Status         | StatusSessao  | Iniciada, EmAndamento, Finalizada    |
+| CriadoEm       | DateTime      |                                      |
+| AtualizadoEm   | DateTime      |                                      |
 
-### SESSION_EVENTS
+### EventoSessao
 Eventos/interações durante a sessão.
 
-| Campo                    | Tipo     | Observações                          |
-|--------------------------|----------|--------------------------------------|
-| Id                       | int (PK) |                                      |
-| SessionId                | int (FK) | FK para Sessions                     |
-| Type                     | string   | QuestionClicked, FindingSelected     |
-| ReferenceId              | int      | Id da pergunta ou achado             |
-| DisplayText              | string   | Texto exibido no chat                |
-| ResponseText             | string   | Resposta/resultado do sistema        |
-| OccurredAt               | datetime |                                      |
-| RelativeSecondsFromStart | int      | Tempo relativo ao início da sessão   |
+| Propriedade          | Tipo         | Observações                          |
+|----------------------|--------------|--------------------------------------|
+| Id                   | int (PK)     |                                      |
+| SessaoId             | int (FK)     | FK para Sessao                       |
+| Tipo                 | TipoEvento   | PerguntaClicada, AchadoSelecionado   |
+| ReferenciaId         | int          | Id da pergunta ou achado             |
+| TextoExibido         | string       | Texto exibido no chat                |
+| TextoResposta        | string       | Resposta/resultado do sistema        |
+| OcorridoEm           | DateTime     |                                      |
+| SegundosDesdeInicio  | int          | Tempo relativo ao início da sessão   |
 
-### CLINICAL_NOTES
+### NotaClinica
 História clínica escrita pelo aluno.
 
-| Campo                  | Tipo     | Observações      |
-|------------------------|----------|------------------|
-| Id                     | int (PK) |                  |
-| SessionId              | int (FK) | FK para Sessions |
-| SummaryText            | string   | Obrigatório      |
-| ProbableDiagnosisText  | string   | Obrigatório      |
-| ConductText            | string   | Obrigatório      |
-| CreatedAt              | datetime |                  |
-| UpdatedAt              | datetime |                  |
+| Propriedade                | Tipo     | Observações      |
+|----------------------------|----------|------------------|
+| Id                         | int (PK) |                  |
+| SessaoId                   | int (FK) | FK para Sessao   |
+| TextoResumo                | string?  | Obrigatório      |
+| TextoDiagnosticoProvavel   | string?  | Obrigatório      |
+| TextoConduta               | string?  | Obrigatório      |
+| CriadoEm                   | DateTime |                  |
+| AtualizadoEm               | DateTime |                  |
 
-### DIFFERENTIAL_DIAGNOSES
+### DiagnosticoDiferencial
 Diagnósticos diferenciais informados pelo aluno.
 
-| Campo         | Tipo     | Observações                |
-|---------------|----------|----------------------------|
-| Id            | int (PK) |                            |
-| SessionId     | int (FK) | FK para Sessions           |
-| PriorityOrder | int      | 1 a 5                     |
-| DiagnosisText | string   | Texto do diagnóstico       |
-| CreatedAt     | datetime |                            |
-| UpdatedAt     | datetime |                            |
+| Propriedade       | Tipo     | Observações                |
+|-------------------|----------|----------------------------|
+| Id                | int (PK) |                            |
+| SessaoId          | int (FK) | FK para Sessao             |
+| OrdemPrioridade   | int      | 1 a 5                     |
+| TextoDiagnostico  | string   | Texto do diagnóstico       |
+| CriadoEm          | DateTime |                            |
+| AtualizadoEm      | DateTime |                            |
 
-### SESSION_PDFS
+### SessaoPdf
 Referência ao PDF gerado.
 
-| Campo       | Tipo     | Observações      |
-|-------------|----------|------------------|
-| Id          | int (PK) |                  |
-| SessionId   | int (FK) | FK para Sessions |
-| FileName    | string   |                  |
-| FilePath    | string   | Caminho ou URL   |
-| GeneratedAt | datetime |                  |
+| Propriedade    | Tipo     | Observações      |
+|----------------|----------|------------------|
+| Id             | int (PK) |                  |
+| SessaoId       | int (FK) | FK para Sessao   |
+| NomeArquivo    | string   |                  |
+| CaminhoArquivo | string   | Caminho ou URL   |
+| GeradoEm       | DateTime |                  |
 
-### CASE_ATTACHMENTS
+### AnexoCaso
 Arquivos auxiliares (futuro).
 
-| Campo    | Tipo     | Observações               |
-|----------|----------|---------------------------|
-| Id       | int (PK) |                           |
-| CaseId   | int (FK) | FK para ClinicalCases     |
-| FileName | string   |                           |
-| FilePath | string   |                           |
-| FileType | string   | image, pdf, yaml, etc.    |
-| CreatedAt| datetime |                           |
+| Propriedade    | Tipo     | Observações               |
+|----------------|----------|---------------------------|
+| Id             | int (PK) |                           |
+| CasoClinicoId  | int (FK) | FK para CasoClinico       |
+| NomeArquivo    | string   |                           |
+| CaminhoArquivo | string   |                           |
+| TipoArquivo    | string?  | image, pdf, yaml, etc.    |
+| CriadoEm       | DateTime |                           |
 
-### CASE_IMPORT_LOGS
+### LogImportacaoCaso
 Logs de importação via YAML.
 
-| Campo            | Tipo     | Observações             |
-|------------------|----------|-------------------------|
-| Id               | int (PK) |                         |
-| CaseId           | int (FK) | Opcional                |
-| ImportedByUserId | int (FK) | FK para Users           |
-| SourceType       | string   | Ex.: YAML               |
-| SourceContent    | string   | Conteúdo bruto (opcional)|
-| Status           | string   | Success, Error          |
-| ErrorMessage     | string   | Se houver               |
-| CreatedAt        | datetime |                         |
+| Propriedade           | Tipo              | Observações             |
+|-----------------------|-------------------|-------------------------|
+| Id                    | int (PK)          |                         |
+| CasoClinicoId         | int? (FK)         | Opcional                |
+| ImportadoPorUsuarioId | int? (FK)         | FK para Usuario         |
+| TipoOrigem            | string?           | Ex.: YAML               |
+| ConteudoOrigem        | string?           | Conteúdo bruto          |
+| Status                | StatusImportacao  | Sucesso, Erro           |
+| MensagemErro          | string?           | Se houver               |
+| CriadoEm              | DateTime          |                         |
 
-### AUDIT_LOGS
+### LogAuditoria
 Registro de ações administrativas.
 
-| Campo      | Tipo     | Observações                      |
-|------------|----------|----------------------------------|
-| Id         | int (PK) |                                  |
-| UserId     | int (FK) | FK para Users                    |
-| EntityName | string   | Nome da entidade alterada        |
-| EntityId   | int      |                                  |
-| ActionType | string   | Create, Update, Delete, Import   |
-| OldValues  | string   | Opcional                         |
-| NewValues  | string   | Opcional                         |
-| CreatedAt  | datetime |                                  |
+| Propriedade    | Tipo       | Observações                      |
+|----------------|------------|----------------------------------|
+| Id             | int (PK)   |                                  |
+| UsuarioId      | int? (FK)  | FK para Usuario                  |
+| NomeEntidade   | string     | Nome da entidade alterada        |
+| EntidadeId     | int        |                                  |
+| TipoAcao       | TipoAcao   | Criar, Atualizar, Deletar, Importar |
+| ValoresAntigos | string?    | JSON opcional                    |
+| ValoresNovos   | string?    | JSON opcional                    |
+| CriadoEm       | DateTime   |                                  |
 
-### SYSTEM_SETTINGS
+### ConfiguracaoSistema
 Configurações globais.
 
-| Campo       | Tipo     | Observações       |
-|-------------|----------|-------------------|
-| Id          | int (PK) |                   |
-| Key         | string   | Nome da config    |
-| Value       | string   | Valor             |
-| Description | string   |                   |
-| UpdatedAt   | datetime |                   |
+| Propriedade | Tipo      | Observações       |
+|-------------|-----------|-------------------|
+| Id          | int (PK)  |                   |
+| Chave       | string    | Nome da config (único) |
+| Valor       | string?   | Valor             |
+| Descricao   | string?   |                   |
+| AtualizadoEm| DateTime  |                   |
+
+---
+
+## Enums (Models/Enums/)
+
+| Enum             | Valores                                |
+|------------------|----------------------------------------|
+| PerfilUsuario    | Aluno, Professor, Administrador        |
+| StatusSessao     | Iniciada, EmAndamento, Finalizada      |
+| TipoEvento       | PerguntaClicada, AchadoSelecionado     |
+| TipoAcao         | Criar, Atualizar, Deletar, Importar    |
+| StatusImportacao | Sucesso, Erro                          |
 
 ---
 
 ## Relacionamentos Principais
 
 ```
-Users 1──N ClinicalCases (CreatedByUserId)
-Users 1──N Sessions (StudentId)
-Users 1──N AuditLogs
-Users 1──N CaseImportLogs
+Usuario 1──N CasoClinico (CriadoPorUsuarioId)
+Usuario 1──N Sessao (AlunoId)
+Usuario 1──N LogAuditoria
+Usuario 1──N LogImportacaoCaso
 
-ClinicalCases 1──N CaseQuestionAnswers
-ClinicalCases 1──N CasePhysicalFindings
-ClinicalCases 1──N Sessions
-ClinicalCases 1──N CaseAttachments
+CasoClinico 1──N RespostaCasoPergunta
+CasoClinico 1──N AchadoFisicoCaso
+CasoClinico 1──N Sessao
+CasoClinico 1──N AnexoCaso
 
-QuestionBank 1──N CaseQuestionAnswers
-PhysicalFindingBank 1──N CasePhysicalFindings
+Pergunta 1──N RespostaCasoPergunta
+AchadoFisico 1──N AchadoFisicoCaso
 
-Sessions 1──N SessionEvents
-Sessions 1──1 ClinicalNotes
-Sessions 1──N DifferentialDiagnoses
-Sessions 1──1 SessionPdfs
+Sessao 1──N EventoSessao
+Sessao 1──1 NotaClinica
+Sessao 1──N DiagnosticoDiferencial
+Sessao 1──1 SessaoPdf
 ```
+
+---
+
+## Configuração do DbContext
+
+- **Fluent API** para configurar relacionamentos, constraints e indexes
+- **Snake_case** para nomes de tabelas e colunas no PostgreSQL (ex: `caso_clinico_id`)
+- **Enums armazenados como string** no banco
+- **Timestamps automáticos**: `CriadoEm` e `AtualizadoEm` preenchidos automaticamente no `SaveChangesAsync`
+- **Cascade delete** para entidades dependentes (eventos, notas, PDFs, diagnósticos)
+- **Restrict delete** para referências opcionais (usuario criador)
