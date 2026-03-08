@@ -1,18 +1,59 @@
+using Microsoft.EntityFrameworkCore;
+using ClinicaSim.API.Data;
+using ClinicaSim.API.Services;
+using ClinicaSim.API.Services.Interfaces;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// =========================================================================
+// Registro de servicos no container de injecao de dependencia
+// =========================================================================
 
+// Contexto do banco de dados PostgreSQL (Npgsql)
+builder.Services.AddDbContext<ClinicaSimDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Controllers da API
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+
+// Documentacao OpenAPI / Swagger
 builder.Services.AddOpenApi();
+
+// --- Servicos de dominio ---
+builder.Services.AddScoped<IUsuarioService, UsuarioService>();
+builder.Services.AddScoped<ICasoClinicoService, CasoClinicoService>();
+builder.Services.AddScoped<IPerguntaService, PerguntaService>();
+builder.Services.AddScoped<IAchadoFisicoService, AchadoFisicoService>();
+builder.Services.AddScoped<ISessaoService, SessaoService>();
+builder.Services.AddScoped<INotaClinicaService, NotaClinicaService>();
+builder.Services.AddScoped<IImportacaoService, ImportacaoService>();
+builder.Services.AddScoped<IConfiguracaoSistemaService, ConfiguracaoSistemaService>();
+
+// Politica de CORS para permitir o frontend Angular em desenvolvimento
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("PermitirFrontend", policy =>
+    {
+        policy.WithOrigins("http://localhost:4200")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// =========================================================================
+// Pipeline de middlewares HTTP
+// =========================================================================
+
+// Swagger/OpenAPI disponivel apenas em desenvolvimento
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
+
+// Habilitar CORS antes dos demais middlewares
+app.UseCors("PermitirFrontend");
 
 app.UseAuthorization();
 

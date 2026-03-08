@@ -1,0 +1,39 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(start \"\" \"C:/DEV/simuladorClinica/docs/fluxograma.html\")",
+      "Bash(dotnet new sln -n ClinicaSim -o backend/)",
+      "Bash(dotnet new webapi -n ClinicaSim.API -o backend/ClinicaSim.API --no-https --use-controllers)",
+      "Bash(dotnet sln backend/ClinicaSim.sln add backend/ClinicaSim.API/ClinicaSim.API.csproj)",
+      "Bash(npx @angular/cli version)",
+      "Bash(ng version)",
+      "Bash(npx @angular/cli@latest new clinica-sim --routing --style=scss --skip-git --ssr=false --directory=frontend/clinica-sim --skip-tests=false)",
+      "Bash(npx @angular/cli@17 new clinica-sim --routing --style=scss --skip-git --ssr=false --directory=frontend/clinica-sim)",
+      "Bash(node --version)",
+      "Bash(npm --version)",
+      "Bash(npx @angular/cli@latest new clinica-sim --routing --style=scss --skip-git --ssr=false --directory=frontend/clinica-sim)",
+      "Bash(dotnet build backend/ClinicaSim.sln)",
+      "Bash(npx ng build)",
+      "Bash(npx ng version)",
+      "Bash(dotnet --version)",
+      "Bash(git add .gitignore INSTRUCTIONS.md .claude/launch.json docs/ backend/ frontend/)",
+      "Bash(git commit:*)",
+      "Bash(git push origin main)",
+      "Bash(git add README.md)",
+      "Bash(dotnet add package Microsoft.EntityFrameworkCore --version 9.0.3)",
+      "Bash(dotnet add package Npgsql.EntityFrameworkCore.PostgreSQL --version 9.0.4)",
+      "Bash(dotnet add package Microsoft.EntityFrameworkCore.Design --version 9.0.3)",
+      "Bash(dotnet build --no-restore)",
+      "Bash(dotnet build)",
+      "Bash(/tmp/write_controllers.py:*)",
+      "Bash(python3 -c:*)",
+      "Bash(node -e \"console.log\\(''node works''\\)\")",
+      "Bash(node -e \":*)",
+      "Bash(node -e \"const fs=require\\(''fs''\\); const p=require\\(''path''\\); const base=p.join\\(''C:'',''DEV'',''simuladorClinica'',''.claude'',''worktrees'',''backend-implementation'',''backend'',''ClinicaSim.API'',''Controllers''\\); console.log\\(''Dir exists:'', fs.existsSync\\(base\\)\\); console.log\\(''Files:'', fs.readdirSync\\(base\\)\\);\")",
+      "Bash(node /tmp/write_all.js)",
+      "Bash(tee \"C:/DEV/simuladorClinica/.claude/worktrees/backend-implementation/backend/ClinicaSim.API/Controllers/test.txt\" Hello it is a test with single quotes like it 's and \"double\" quotes HEREDOCEND echo \"Exit: $?\")",
+      "Bash(cat:*)",
+      "Bash(git add -A)"
+    ]
+  }
+}
