@@ -1,0 +1,53 @@
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  height: 64px;
+  background: #1a5f7a;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+
+  &__brand {
+    display: flex;
+    align-items: center;
+  }
+
+  &__logo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.25rem;
+  }
+
+  &__logo-icon {
+    font-size: 1.5rem;
+  }
+
+  &__links {
+    display: flex;
+    gap: 1.5rem;
+  }
+
+  &__link {
+    color: rgba(255,255,255,0.85);
+    text-decoration: none;
+    font-weight: 500;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    transition: color 0.2s, background 0.2s;
+
+    &:hover {
+      color: #fff;
+      background: rgba(255,255,255,0.15);
+    }
+
+    &--active {
+      color: #fff;
+      background: rgba(255,255,255,0.2);
+    }
+  }
+}

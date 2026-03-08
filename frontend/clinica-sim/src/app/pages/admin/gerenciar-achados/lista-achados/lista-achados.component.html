@@ -1,0 +1,34 @@
+<div class="lista-page">
+  <div class="lista-page__header">
+    <h1 class="lista-page__titulo">Hallazgos Físicos</h1>
+    <a routerLink="/admin/achados/novo" class="btn btn--primary">+ Nuevo Hallazgo</a>
+  </div>
+  @if (erro()) { <div class="alerta alerta--erro">{{ erro() }}</div> }
+  <div class="lista-page__busca">
+    <input type="text" class="input-busca" placeholder="Buscar..." [value]="filtro()" (input)="filtro.set($any($event.target).value)" />
+  </div>
+  @if (carregando()) {
+    <app-loading-spinner />
+  } @else {
+    <div class="tabla-wrapper">
+      <table class="tabla">
+        <thead><tr><th>Nombre</th><th>Sistema</th><th>Activo</th><th>Acciones</th></tr></thead>
+        <tbody>
+          @for (a of achadosFiltrados; track a.id) {
+            <tr>
+              <td>{{ a.nomeAchado }}</td>
+              <td>{{ a.sistemaCategoria }}</td>
+              <td><span class="badge" [class.badge--ativo]="a.ativo" [class.badge--inativo]="!a.ativo">{{ a.ativo ? '✓' : '✗' }}</span></td>
+              <td class="tabla__acciones">
+                <a [routerLink]="['/admin/achados', a.id, 'editar']" class="btn-icon">✏️</a>
+                <button class="btn-icon" (click)="excluir(a.id)">🗑️</button>
+              </td>
+            </tr>
+          }
+          @empty { <tr><td colspan="4" class="tabla__vazio">No se encontraron hallazgos.</td></tr> }
+        </tbody>
+      </table>
+    </div>
+    <p class="lista-page__total">Mostrando {{ achadosFiltrados.length }} de {{ achados().length }} hallazgos</p>
+  }
+</div>

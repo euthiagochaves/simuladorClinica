@@ -1,0 +1,56 @@
+<app-navbar />
+
+<div class="inicio">
+  <header class="inicio__header">
+    <h1 class="inicio__titulo">Bienvenido al Simulador Clínico</h1>
+    <p class="inicio__subtitulo">Seleccione un caso clínico para iniciar la atención</p>
+  </header>
+
+  <main class="inicio__conteudo">
+    @if (carregando()) {
+      <app-loading-spinner />
+    } @else if (erro()) {
+      <div class="inicio__erro">
+        <p>{{ erro() }}</p>
+        <button class="btn btn--secondary" (click)="carregarCasos()">Reintentar</button>
+      </div>
+    } @else if (casos().length === 0) {
+      <div class="inicio__vazio">
+        <p>No hay casos clínicos disponibles en este momento.</p>
+      </div>
+    } @else {
+      <div class="inicio__grid">
+        @for (caso of casos(); track caso.id) {
+          <div class="card-caso">
+            <div class="card-caso__info">
+              <h2 class="card-caso__titulo">{{ caso.titulo }}</h2>
+              <div class="card-caso__detalles">
+                <p><span class="label">Paciente:</span> {{ caso.nomePaciente }}</p>
+                <p><span class="label">Edad:</span> {{ caso.idadePaciente }} años</p>
+                <p><span class="label">Sexo:</span> {{ caso.sexoPaciente }}</p>
+                <p><span class="label">Motivo de consulta:</span> {{ caso.queixaPrincipal }}</p>
+                <p>
+                  <span class="label">Triaje:</span>
+                  <span class="triagem triagem--{{ caso.triagem | lowercase }}">{{ caso.triagem }}</span>
+                </p>
+              </div>
+            </div>
+            <button
+              class="btn btn--primary card-caso__btn"
+              (click)="iniciarAtendimento(caso.id)"
+              [disabled]="iniciandoSessao() !== null"
+            >
+              @if (iniciandoSessao() === caso.id) {
+                Iniciando...
+              } @else {
+                Iniciar Atención ›››
+              }
+            </button>
+          </div>
+        }
+      </div>
+    }
+  </main>
+</div>
+
+<app-footer />

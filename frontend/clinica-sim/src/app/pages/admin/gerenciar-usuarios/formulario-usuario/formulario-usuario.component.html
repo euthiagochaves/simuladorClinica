@@ -1,0 +1,34 @@
+<div class="formulario-page">
+  <div class="formulario-page__header">
+    <h1 class="formulario-page__titulo">{{ modoEdicao ? 'Editar Usuario' : 'Nuevo Usuario' }}</h1>
+    <a routerLink="/admin/usuarios" class="btn btn--secondary">← Volver</a>
+  </div>
+  @if (erro()) { <div class="alerta alerta--erro">{{ erro() }}</div> }
+  <div class="formulario-page__corpo">
+    <div class="form-campo">
+      <label>Nombre *</label>
+      <input type="text" [value]="nome()" (input)="nome.set($any($event.target).value)" placeholder="Nombre completo" />
+    </div>
+    <div class="form-campo">
+      <label>Email *</label>
+      <input type="email" [value]="email()" (input)="email.set($any($event.target).value)" placeholder="email@ejemplo.com" />
+    </div>
+    <div class="form-campo">
+      <label>Perfil *</label>
+      <select [value]="perfil()" (change)="perfil.set($any($event.target).value)">
+        <option value="">Seleccione...</option>
+        <option value="Admin">Admin</option>
+        <option value="Alumno">Alumno</option>
+        <option value="Docente">Docente</option>
+      </select>
+    </div>
+    <div class="form-campo form-campo--checkbox">
+      <input type="checkbox" id="ativo" [checked]="ativo()" (change)="ativo.set($any($event.target).checked)" />
+      <label for="ativo">Usuario activo</label>
+    </div>
+    <div class="form-acoes">
+      <button class="btn btn--primary" (click)="salvar()" [disabled]="salvando()">{{ salvando() ? 'Guardando...' : 'Guardar' }}</button>
+      <a routerLink="/admin/usuarios" class="btn btn--secondary">Cancelar</a>
+    </div>
+  </div>
+</div>

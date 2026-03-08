@@ -1,0 +1,69 @@
+<div class="atendimento">
+  <nav class="atendimento__navbar">
+    <span class="atendimento__logo">🏥 ClinicaSim</span>
+    @if (sessao()) {
+      <span class="atendimento__sessao">Sesión: {{ sessao()!.codigo }}</span>
+    }
+    <a routerLink="/" class="btn btn--voltar">← Volver</a>
+  </nav>
+
+  @if (carregando()) {
+    <app-loading-spinner />
+  } @else if (erro()) {
+    <div class="atendimento__erro">
+      <p>{{ erro() }}</p>
+      <a routerLink="/" class="btn btn--secondary">Volver al inicio</a>
+    </div>
+  } @else if (sessao()) {
+    <div class="atendimento__conteudo">
+      <app-info-paciente [sessao]="sessao()!" />
+
+      <div class="atendimento__layout">
+        <div class="atendimento__chat-col">
+          <h3 class="atendimento__col-titulo">Chat Clínico</h3>
+          <app-chat-clinico [eventos]="eventos()" />
+        </div>
+
+        <div class="atendimento__painel-col">
+          <div class="atendimento__abas">
+            <button
+              class="aba"
+              [class.aba--ativa]="abaAtiva() === 'anamnese'"
+              (click)="trocarAba('anamnese')"
+            >Anamnesis</button>
+            <button
+              class="aba"
+              [class.aba--ativa]="abaAtiva() === 'exame'"
+              (click)="trocarAba('exame')"
+            >Ex. Físico</button>
+            <button
+              class="aba"
+              [class.aba--ativa]="abaAtiva() === 'historia'"
+              (click)="trocarAba('historia')"
+            >H. Clínica</button>
+          </div>
+          <div class="atendimento__aba-conteudo">
+            @if (abaAtiva() === 'anamnese') {
+              <app-painel-anamnese
+                [perguntasJaFeitas]="perguntasFeitas"
+                (perguntaSelecionada)="onPerguntaSelecionada($event)"
+              />
+            }
+            @if (abaAtiva() === 'exame') {
+              <app-painel-exame-fisico
+                [achadosSelecionados]="achadosSelecionados"
+                (achadoSelecionado)="onAchadoSelecionado($event)"
+              />
+            }
+            @if (abaAtiva() === 'historia') {
+              <app-painel-historia-clinica
+                [sessaoId]="sessao()!.id"
+                (finalizou)="onFinalizou()"
+              />
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

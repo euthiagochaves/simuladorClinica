@@ -1,0 +1,62 @@
+<div class="formulario-page">
+  <div class="formulario-page__header">
+    <h1 class="formulario-page__titulo">{{ modoEdicao ? 'Editar Caso Clínico' : 'Nuevo Caso Clínico' }}</h1>
+    <a routerLink="/admin/casos" class="btn btn--secondary">← Volver a Lista</a>
+  </div>
+
+  @if (erro()) {
+    <div class="alerta alerta--erro">{{ erro() }}</div>
+  }
+
+  <div class="formulario-page__corpo">
+    <div class="form-campo">
+      <label>Título *</label>
+      <input type="text" [value]="titulo()" (input)="titulo.set($any($event.target).value)" placeholder="Título del caso" />
+    </div>
+    <div class="form-campo">
+      <label>Nombre del Paciente *</label>
+      <input type="text" [value]="nomePaciente()" (input)="nomePaciente.set($any($event.target).value)" placeholder="Nombre completo" />
+    </div>
+    <div class="form-campo">
+      <label>Edad *</label>
+      <input type="number" [value]="idadePaciente()" (input)="idadePaciente.set(+$any($event.target).value)" min="0" max="120" />
+    </div>
+    <div class="form-campo">
+      <label>Sexo *</label>
+      <select [value]="sexoPaciente()" (change)="sexoPaciente.set($any($event.target).value)">
+        <option value="">Seleccione...</option>
+        <option value="Masculino">Masculino</option>
+        <option value="Femenino">Femenino</option>
+        <option value="Otro">Otro</option>
+      </select>
+    </div>
+    <div class="form-campo">
+      <label>Motivo de Consulta *</label>
+      <input type="text" [value]="queixaPrincipal()" (input)="queixaPrincipal.set($any($event.target).value)" placeholder="Queja principal" />
+    </div>
+    <div class="form-campo">
+      <label>Triaje *</label>
+      <select [value]="triagem()" (change)="triagem.set($any($event.target).value)">
+        <option value="">Seleccione...</option>
+        <option value="Urgente">Urgente</option>
+        <option value="Prioritario">Prioritario</option>
+        <option value="Normal">Normal</option>
+      </select>
+    </div>
+    <div class="form-campo">
+      <label>Descripción</label>
+      <textarea rows="4" [value]="descricao()" (input)="descricao.set($any($event.target).value)" placeholder="Descripción detallada del caso..."></textarea>
+    </div>
+    <div class="form-campo form-campo--checkbox">
+      <input type="checkbox" id="ativo" [checked]="ativo()" (change)="ativo.set($any($event.target).checked)" />
+      <label for="ativo">Caso activo</label>
+    </div>
+
+    <div class="form-acoes">
+      <button class="btn btn--primary" (click)="salvar()" [disabled]="salvando()">
+        {{ salvando() ? 'Guardando...' : 'Guardar' }}
+      </button>
+      <a routerLink="/admin/casos" class="btn btn--secondary">Cancelar</a>
+    </div>
+  </div>
+</div>

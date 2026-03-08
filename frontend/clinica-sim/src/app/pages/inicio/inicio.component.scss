@@ -1,0 +1,154 @@
+.inicio {
+  min-height: calc(100vh - 128px);
+  background: #f5f7fa;
+
+  &__header {
+    background: linear-gradient(135deg, #1a5f7a 0%, #2d9cdb 100%);
+    color: #fff;
+    padding: 3rem 2rem;
+    text-align: center;
+  }
+
+  &__titulo {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem;
+  }
+
+  &__subtitulo {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    margin: 0;
+  }
+
+  &__conteudo {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  &__erro,
+  &__vazio {
+    text-align: center;
+    padding: 2rem;
+    color: #666;
+  }
+
+  &__erro p {
+    color: #c0392b;
+    margin-bottom: 1rem;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+.card-caso {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  transition: box-shadow 0.2s;
+
+  &:hover {
+    box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+  }
+
+  &__titulo {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1a5f7a;
+    margin: 0 0 0.75rem;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.05em;
+  }
+
+  &__info {
+    flex: 1;
+  }
+
+  &__detalles {
+    p {
+      margin: 0.35rem 0;
+      font-size: 0.95rem;
+      color: #333;
+    }
+  }
+
+  &__btn {
+    width: 100%;
+  }
+}
+
+.label {
+  font-weight: 600;
+  color: #555;
+  margin-right: 0.3rem;
+}
+
+.triagem {
+  display: inline-block;
+  padding: 0.15rem 0.6rem;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+
+  &--urgente {
+    background: #ffe5e5;
+    color: #c0392b;
+  }
+
+  &--normal {
+    background: #e8f5e9;
+    color: #2e7d32;
+  }
+
+  &--prioritario {
+    background: #fff3e0;
+    color: #e65100;
+  }
+}
+
+.btn {
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, opacity 0.2s;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  &--primary {
+    background: #1a5f7a;
+    color: #fff;
+
+    &:hover:not(:disabled) {
+      background: #145069;
+    }
+  }
+
+  &--secondary {
+    background: #e0e0e0;
+    color: #333;
+
+    &:hover:not(:disabled) {
+      background: #ccc;
+    }
+  }
+}

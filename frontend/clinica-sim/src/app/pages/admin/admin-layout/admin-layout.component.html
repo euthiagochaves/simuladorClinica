@@ -1,0 +1,35 @@
+<div class="admin">
+  <nav class="admin__topbar">
+    <span class="admin__logo">🏥 ClinicaSim — Administración</span>
+    <a routerLink="/" class="btn btn--voltar">← Volver al Inicio</a>
+  </nav>
+
+  <div class="admin__layout">
+    <aside class="admin__sidebar">
+      <nav class="sidebar-nav">
+        <a routerLink="/admin/casos" routerLinkActive="sidebar-nav__link--ativo" class="sidebar-nav__link">
+          📋 Casos Clínicos
+        </a>
+        <a routerLink="/admin/perguntas" routerLinkActive="sidebar-nav__link--ativo" class="sidebar-nav__link">
+          ❓ Preguntas
+        </a>
+        <a routerLink="/admin/achados" routerLinkActive="sidebar-nav__link--ativo" class="sidebar-nav__link">
+          🔍 Hallazgos Físicos
+        </a>
+        <a routerLink="/admin/usuarios" routerLinkActive="sidebar-nav__link--ativo" class="sidebar-nav__link">
+          👥 Usuarios
+        </a>
+        <a routerLink="/admin/importacao" routerLinkActive="sidebar-nav__link--ativo" class="sidebar-nav__link">
+          📥 Importación YAML
+        </a>
+        <a routerLink="/admin/configuracoes" routerLinkActive="sidebar-nav__link--ativo" class="sidebar-nav__link">
+          ⚙️ Configuración
+        </a>
+      </nav>
+    </aside>
+
+    <main class="admin__main">
+      <router-outlet />
+    </main>
+  </div>
+</div>

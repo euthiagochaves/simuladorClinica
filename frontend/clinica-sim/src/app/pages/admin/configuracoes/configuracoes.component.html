@@ -1,0 +1,21 @@
+<div class="formulario-page">
+  <div class="formulario-page__header">
+    <h1 class="formulario-page__titulo">Configuración</h1>
+  </div>
+
+  @if (erro()) { <div class="alerta alerta--erro">{{ erro() }}</div> }
+  @if (sucesso()) { <div class="alerta alerta--sucesso">{{ sucesso() }}</div> }
+
+  <div class="formulario-page__corpo">
+    @if (carregando()) {
+      <p>Cargando configuraciones...</p>
+    } @else {
+      <p class="config__desc">Administre las configuraciones globales de la plataforma.</p>
+      <div class="form-acoes">
+        <button class="btn btn--primary" (click)="salvar()" [disabled]="salvando()">
+          {{ salvando() ? 'Guardando...' : 'Guardar Configuración' }}
+        </button>
+      </div>
+    }
+  </div>
+</div>
