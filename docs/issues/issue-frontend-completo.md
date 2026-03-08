@@ -185,7 +185,7 @@ Tela inicial onde o aluno vê os casos clínicos disponíveis e pode iniciar um 
 1. Ao carregar, faz `GET /api/casos-clinicos?somenteAtivos=true`
 2. Exibe os casos em **cards** (grid 2 colunas desktop, 1 coluna mobile)
 3. Cada card mostra: Título, NomePaciente, Idade, Sexo, QueixaPrincipal, Triagem
-4. Botão "Iniciar Atención" faz `POST /api/sessoes` com body `{ casoClinicoId: "...", alunoId: null }`
+4. Botão "Iniciar Atención" faz `POST /api/sessoes` com body `{ casoClinicoId: 1, alunoId: null }`
 5. Recebe o `SessaoResponse` com o `id` da sessão
 6. Redireciona para `/atendimento/{sessaoId}`
 
@@ -289,7 +289,7 @@ Tela principal dividida em 3 áreas: Info do Paciente (topo), Chat Clínico (esq
 1. Ao abrir, carrega todas as perguntas ativas: `GET /api/perguntas?somenteAtivas=true`
 2. Exibe dropdown pesquisável (filtro por texto digitado) — ordem alfabética
 3. Opcionalmente, filtro por **categoria** (dolor, fiebre, antecedentes, etc.)
-4. Ao clicar numa pergunta: `POST /api/sessoes/{id}/perguntas` com body `{ perguntaId: "..." }`
+4. Ao clicar numa pergunta: `POST /api/sessoes/{id}/perguntas` com body `{ perguntaId: 1 }`
 5. Recebe `RespostaInteracaoResponse` com `textoExibido` e `textoResposta`
 6. Adiciona duas mensagens no chat:
    - `Médico: [textoExibido]`
@@ -349,7 +349,7 @@ Tela principal dividida em 3 áreas: Info do Paciente (topo), Chat Clínico (esq
    - Sistema Nefrourológico
    - Sistema Neurológico
    - Sistema Osteoartromuscular
-4. Ao clicar num achado: `POST /api/sessoes/{id}/achados` com body `{ achadoFisicoId: "..." }`
+4. Ao clicar num achado: `POST /api/sessoes/{id}/achados` com body `{ achadoFisicoId: 1 }`
 5. Recebe `RespostaInteracaoResponse`
 6. Adiciona mensagem no chat:
    - `Examen Físico: [textoExibido]: [textoResposta]`
@@ -924,7 +924,7 @@ export class CasoClinicoService {
     return this.http.get<CasoClinicoResumo[]>(`${this.apiUrl}?somenteAtivos=true`);
   }
 
-  buscarPorId(id: string): Observable<CasoClinico> {
+  buscarPorId(id: number): Observable<CasoClinico> {
     return this.http.get<CasoClinico>(`${this.apiUrl}/${id}`);
   }
 
@@ -932,11 +932,11 @@ export class CasoClinicoService {
     return this.http.post<CasoClinico>(this.apiUrl, request);
   }
 
-  atualizar(id: string, request: AtualizarCasoClinicoRequest): Observable<CasoClinico> {
+  atualizar(id: number, request: AtualizarCasoClinicoRequest): Observable<CasoClinico> {
     return this.http.put<CasoClinico>(`${this.apiUrl}/${id}`, request);
   }
 
-  desativar(id: string): Observable<void> {
+  desativar(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 }
@@ -957,10 +957,12 @@ Seguir este padrão para TODOS os services:
 
 Criar interfaces TypeScript que espelham os DTOs do backend:
 
+**IMPORTANTE**: Todos os IDs são `number` (int no backend), NÃO string/UUID.
+
 ```typescript
 // caso-clinico.model.ts
 export interface CasoClinico {
-  id: string;
+  id: number;
   titulo: string;
   nomePaciente: string;
   idade: number;
@@ -973,7 +975,7 @@ export interface CasoClinico {
 }
 
 export interface CasoClinicoResumo {
-  id: string;
+  id: number;
   titulo: string;
   nomePaciente: string;
   idade: number;
@@ -982,9 +984,116 @@ export interface CasoClinicoResumo {
   triagem?: string;
   ativo: boolean;
 }
-```
 
-Criar models para: CasoClinico, Pergunta, AchadoFisico, Sessao, EventoSessao, NotaClinica, Usuario, RespostaInteracao, ConfiguracaoSistema, ResultadoImportacao, etc.
+// sessao.model.ts
+export interface Sessao {
+  id: number;
+  casoClinicoId: number;
+  alunoId?: number;
+  codigoSessao: string;
+  iniciadoEm: string;
+  finalizadoEm?: string;
+  status: string;
+  casoClinico?: CasoClinicoResumo;
+}
+
+export interface IniciarSessaoRequest {
+  casoClinicoId: number;
+  alunoId?: number;
+}
+
+export interface RespostaInteracao {
+  tipoEvento: string;
+  textoExibido: string;
+  textoResposta: string;
+  segundosDesdeInicio: number;
+}
+
+export interface EventoSessao {
+  id: number;
+  tipo: string;
+  textoExibido: string;
+  textoResposta: string;
+  ocorridoEm: string;
+  segundosDesdeInicio: number;
+}
+
+// pergunta.model.ts
+export interface Pergunta {
+  id: number;
+  texto: string;
+  secao: string;
+  categoria: string;
+  respostaPadrao: string;
+  ativo: boolean;
+  ordemExibicao?: number;
+}
+
+export interface FazerPerguntaRequest {
+  perguntaId: number;
+}
+
+// achado-fisico.model.ts
+export interface AchadoFisico {
+  id: number;
+  nome: string;
+  sistemaCategoria: string;
+  descricao?: string;
+  resultadoPadrao: string;
+  ativo: boolean;
+}
+
+export interface SelecionarAchadoRequest {
+  achadoFisicoId: number;
+}
+
+// nota-clinica.model.ts
+export interface NotaClinica {
+  id: number;
+  textoResumo: string;
+  textoDiagnosticoProvavel: string;
+  textoConduta: string;
+  diagnosticosDiferenciais: DiagnosticoDiferencialItem[];
+  criadoEm: string;
+}
+
+export interface SalvarNotaClinicaRequest {
+  textoResumo: string;
+  textoDiagnosticoProvavel: string;
+  textoConduta: string;
+  diagnosticosDiferenciais: DiagnosticoDiferencialItem[];
+}
+
+export interface DiagnosticoDiferencialItem {
+  ordemPrioridade: number;
+  textoDiagnostico: string;
+}
+
+// usuario.model.ts
+export interface Usuario {
+  id: number;
+  nomeCompleto: string;
+  email: string;
+  perfil: string;
+  ativo: boolean;
+  criadoEm: string;
+}
+
+// configuracao.model.ts
+export interface ConfiguracaoSistema {
+  id: number;
+  chave: string;
+  valor: string;
+  descricao?: string;
+}
+
+// importacao.model.ts
+export interface ResultadoImportacao {
+  sucesso: boolean;
+  mensagemErro?: string;
+  casoClinicoId?: number;
+}
+```
 
 ---
 
