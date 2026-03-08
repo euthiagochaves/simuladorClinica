@@ -31,10 +31,10 @@ export class PainelAnamneseComponent implements OnInit {
     const categoria = this.filtroCategoria();
     return this.perguntas()
       .filter(p =>
-        (!texto || p.textoPergunta.toLowerCase().includes(texto)) &&
+        (!texto || p.texto.toLowerCase().includes(texto)) &&
         (!categoria || p.categoria === categoria)
       )
-      .sort((a, b) => a.textoPergunta.localeCompare(b.textoPergunta));
+      .sort((a, b) => a.texto.localeCompare(b.texto));
   }
 
   get totalJaFeitas(): number {

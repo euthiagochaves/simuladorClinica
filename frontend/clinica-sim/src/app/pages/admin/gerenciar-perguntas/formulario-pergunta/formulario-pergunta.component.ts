@@ -18,9 +18,11 @@ export class FormularioPerguntaComponent implements OnInit {
   id = signal<number | null>(null);
   salvando = signal(false);
   erro = signal<string | null>(null);
-  textoPergunta = signal('');
+  texto = signal('');
+  secao = signal('');
   categoria = signal('');
-  ativa = signal(true);
+  respostaPadrao = signal('');
+  ativo = signal(true);
 
   get modoEdicao(): boolean { return this.id() !== null; }
 
@@ -29,14 +31,14 @@ export class FormularioPerguntaComponent implements OnInit {
     if (idParam) {
       this.id.set(Number(idParam));
       this.perguntaService.buscarPorId(Number(idParam)).subscribe({
-        next: (p) => { this.textoPergunta.set(p.textoPergunta); this.categoria.set(p.categoria); this.ativa.set(p.ativa); },
+        next: (p) => { this.texto.set(p.texto); this.secao.set(p.secao); this.categoria.set(p.categoria); this.respostaPadrao.set(p.respostaPadrao); this.ativo.set(p.ativo); },
         error: (err) => this.erro.set(err.mensagemAmigavel || 'Error al cargar.')
       });
     }
   }
 
   salvar(): void {
-    const dados: Partial<Pergunta> = { textoPergunta: this.textoPergunta(), categoria: this.categoria(), ativa: this.ativa() };
+    const dados: Partial<Pergunta> = { texto: this.texto(), secao: this.secao(), categoria: this.categoria(), respostaPadrao: this.respostaPadrao(), ativo: this.ativo() };
     this.salvando.set(true);
     this.erro.set(null);
     const obs = this.modoEdicao ? this.perguntaService.atualizar(this.id()!, dados) : this.perguntaService.criar(dados);

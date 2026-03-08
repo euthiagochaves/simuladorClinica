@@ -2,7 +2,7 @@
   <nav class="atendimento__navbar">
     <span class="atendimento__logo">🏥 ClinicaSim</span>
     @if (sessao()) {
-      <span class="atendimento__sessao">Sesión: {{ sessao()!.codigo }}</span>
+      <span class="atendimento__sessao">Sesión: {{ sessao()!.codigoSessao }}</span>
     }
     <a routerLink="/" class="btn btn--voltar">← Volver</a>
   </nav>

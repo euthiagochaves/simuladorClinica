@@ -16,7 +16,7 @@
         <tbody>
           @for (u of usuariosFiltrados; track u.id) {
             <tr>
-              <td>{{ u.nome }}</td>
+              <td>{{ u.nomeCompleto }}</td>
               <td>{{ u.email }}</td>
               <td>{{ u.perfil }}</td>
               <td><span class="badge" [class.badge--ativo]="u.ativo" [class.badge--inativo]="!u.ativo">{{ u.ativo ? '✓' : '✗' }}</span></td>

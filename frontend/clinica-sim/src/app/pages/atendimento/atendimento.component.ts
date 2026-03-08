@@ -44,13 +44,13 @@ export class AtendimentoComponent implements OnInit {
 
   get perguntasFeitas(): number[] {
     return this.eventos()
-      .filter(e => e.tipo === 'Pergunta')
+      .filter(e => e.tipo === 'PerguntaClicada')
       .map(e => e.id);
   }
 
   get achadosSelecionados(): number[] {
     return this.eventos()
-      .filter(e => e.tipo === 'Achado')
+      .filter(e => e.tipo === 'AchadoSelecionado')
       .map(e => e.id);
   }
 
@@ -93,12 +93,11 @@ export class AtendimentoComponent implements OnInit {
       next: (resposta) => {
         const novoEvento: EventoSessao = {
           id: --this.contadorEventoLocal,
-          sessaoId: sessao.id,
-          tipo: 'Pergunta',
+          tipo: resposta.tipoEvento,
           textoExibido: resposta.textoExibido,
           textoResposta: resposta.textoResposta,
           segundosDesdeInicio: resposta.segundosDesdeInicio,
-          dataHora: new Date().toISOString()
+          ocorridoEm: new Date().toISOString()
         };
         this.eventos.update(e => [...e, novoEvento]);
         this.processando.set(false);
@@ -118,12 +117,11 @@ export class AtendimentoComponent implements OnInit {
       next: (resposta) => {
         const novoEvento: EventoSessao = {
           id: --this.contadorEventoLocal,
-          sessaoId: sessao.id,
-          tipo: 'Achado',
+          tipo: resposta.tipoEvento,
           textoExibido: resposta.textoExibido,
           textoResposta: resposta.textoResposta,
           segundosDesdeInicio: resposta.segundosDesdeInicio,
-          dataHora: new Date().toISOString()
+          ocorridoEm: new Date().toISOString()
         };
         this.eventos.update(e => [...e, novoEvento]);
         this.processando.set(false);

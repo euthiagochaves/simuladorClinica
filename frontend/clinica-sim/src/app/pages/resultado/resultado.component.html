@@ -16,20 +16,20 @@
       <div class="resultado__exito">
         <span class="resultado__check">✓</span>
         <h1>Atención Finalizada Exitosamente</h1>
-        <p>Código de sesión: <strong>{{ sessao()!.codigo }}</strong></p>
+        <p>Código de sesión: <strong>{{ sessao()!.codigoSessao }}</strong></p>
       </div>
 
       <section class="seccion">
         <h2 class="seccion__titulo">Datos del Paciente</h2>
         <div class="seccion__grid">
           <div><span class="label">Paciente:</span> {{ sessao()!.casoClinico?.nomePaciente }}</div>
-          <div><span class="label">Edad:</span> {{ sessao()!.casoClinico?.idadePaciente }} años</div>
-          <div><span class="label">Sexo:</span> {{ sessao()!.casoClinico?.sexoPaciente }}</div>
+          <div><span class="label">Edad:</span> {{ sessao()!.casoClinico?.idade }} años</div>
+          <div><span class="label">Sexo:</span> {{ sessao()!.casoClinico?.sexo }}</div>
           <div><span class="label">Triaje:</span> {{ sessao()!.casoClinico?.triagem }}</div>
           <div class="seccion__full"><span class="label">Motivo de consulta:</span> {{ sessao()!.casoClinico?.queixaPrincipal }}</div>
-          <div><span class="label">Inicio:</span> {{ sessao()!.dataInicio | date:'dd/MM/yyyy HH:mm' }}</div>
-          @if (sessao()!.dataFim) {
-            <div><span class="label">Fin:</span> {{ sessao()!.dataFim | date:'dd/MM/yyyy HH:mm' }}</div>
+          <div><span class="label">Inicio:</span> {{ sessao()!.iniciadoEm | date:'dd/MM/yyyy HH:mm' }}</div>
+          @if (sessao()!.finalizadoEm) {
+            <div><span class="label">Fin:</span> {{ sessao()!.finalizadoEm | date:'dd/MM/yyyy HH:mm' }}</div>
           }
         </div>
       </section>
@@ -43,10 +43,10 @@
           @for (evento of eventos(); track evento.id) {
             <div class="interacciones__item">
               <span class="interacciones__tempo">{{ formatarTempo(evento.segundosDesdeInicio) }}</span>
-              @if (evento.tipo === 'Pergunta') {
+              @if (evento.tipo === 'PerguntaClicada') {
                 <span><strong>Médico:</strong> {{ evento.textoExibido }}</span>
                 <span class="interacciones__resposta"><strong>Paciente:</strong> {{ evento.textoResposta }}</span>
-              } @else if (evento.tipo === 'Achado') {
+              } @else if (evento.tipo === 'AchadoSelecionado') {
                 <span><strong>Examen Físico:</strong> {{ evento.textoExibido }}: {{ evento.textoResposta }}</span>
               }
             </div>

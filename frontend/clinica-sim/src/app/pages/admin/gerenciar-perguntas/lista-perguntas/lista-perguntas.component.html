@@ -16,9 +16,9 @@
         <tbody>
           @for (p of perguntasFiltradas; track p.id) {
             <tr>
-              <td>{{ p.textoPergunta }}</td>
+              <td>{{ p.texto }}</td>
               <td>{{ p.categoria }}</td>
-              <td><span class="badge" [class.badge--ativo]="p.ativa" [class.badge--inativo]="!p.ativa">{{ p.ativa ? '✓' : '✗' }}</span></td>
+              <td><span class="badge" [class.badge--ativo]="p.ativo" [class.badge--inativo]="!p.ativo">{{ p.ativo ? '✓' : '✗' }}</span></td>
               <td class="tabla__acciones">
                 <a [routerLink]="['/admin/perguntas', p.id, 'editar']" class="btn-icon">✏️</a>
                 <button class="btn-icon" (click)="excluir(p.id)">🗑️</button>

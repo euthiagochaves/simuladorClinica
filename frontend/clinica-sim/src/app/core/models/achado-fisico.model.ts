@@ -1,6 +1,8 @@
 export interface AchadoFisico {
   id: number;
-  nomeAchado: string;
+  nome: string;
   sistemaCategoria: string;
+  descricao?: string;
+  resultadoPadrao: string;
   ativo: boolean;
 }

@@ -16,7 +16,7 @@
         <tbody>
           @for (a of achadosFiltrados; track a.id) {
             <tr>
-              <td>{{ a.nomeAchado }}</td>
+              <td>{{ a.nome }}</td>
               <td>{{ a.sistemaCategoria }}</td>
               <td><span class="badge" [class.badge--ativo]="a.ativo" [class.badge--inativo]="!a.ativo">{{ a.ativo ? '✓' : '✗' }}</span></td>
               <td class="tabla__acciones">

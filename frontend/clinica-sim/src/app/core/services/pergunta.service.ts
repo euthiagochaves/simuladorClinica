@@ -12,7 +12,7 @@ export class PerguntaService {
   listar(somenteAtivas?: boolean): Observable<Pergunta[]> {
     let params = new HttpParams();
     if (somenteAtivas !== undefined) {
-      params = params.set('somenteAtivas', String(somenteAtivas));
+      params = params.set('apenasAtivas', String(somenteAtivas));
     }
     return this.http.get<Pergunta[]>(this.baseUrl, { params });
   }

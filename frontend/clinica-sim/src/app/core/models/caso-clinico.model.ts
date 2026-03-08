@@ -2,13 +2,11 @@ export interface CasoClinico {
   id: number;
   titulo: string;
   nomePaciente: string;
-  idadePaciente: number;
-  sexoPaciente: string;
+  idade: number;
+  sexo: string;
   queixaPrincipal: string;
-  triagem: string;
+  triagem?: string;
+  resumo?: string;
   ativo: boolean;
-  descricao?: string;
-  historiaDoenca?: string;
-  antecedentesPatologicos?: string;
-  diagnosticoFinal?: string;
+  criadoEm?: string;
 }

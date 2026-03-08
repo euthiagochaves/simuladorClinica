@@ -1,6 +1,9 @@
 export interface Pergunta {
   id: number;
-  textoPergunta: string;
+  texto: string;
+  secao: string;
   categoria: string;
-  ativa: boolean;
+  respostaPadrao: string;
+  ativo: boolean;
+  ordemExibicao?: number;
 }

@@ -18,7 +18,7 @@ export class FormularioUsuarioComponent implements OnInit {
   id = signal<number | null>(null);
   salvando = signal(false);
   erro = signal<string | null>(null);
-  nome = signal('');
+  nomeCompleto = signal('');
   email = signal('');
   perfil = signal('');
   ativo = signal(true);
@@ -30,14 +30,14 @@ export class FormularioUsuarioComponent implements OnInit {
     if (idParam) {
       this.id.set(Number(idParam));
       this.usuarioService.buscarPorId(Number(idParam)).subscribe({
-        next: (u) => { this.nome.set(u.nome); this.email.set(u.email); this.perfil.set(u.perfil); this.ativo.set(u.ativo); },
+        next: (u) => { this.nomeCompleto.set(u.nomeCompleto); this.email.set(u.email); this.perfil.set(u.perfil); this.ativo.set(u.ativo); },
         error: (err) => this.erro.set(err.mensagemAmigavel || 'Error al cargar.')
       });
     }
   }
 
   salvar(): void {
-    const dados: Partial<Usuario> = { nome: this.nome(), email: this.email(), perfil: this.perfil(), ativo: this.ativo() };
+    const dados: Partial<Usuario> = { nomeCompleto: this.nomeCompleto(), email: this.email(), perfil: this.perfil(), ativo: this.ativo() };
     this.salvando.set(true);
     this.erro.set(null);
     const obs = this.modoEdicao ? this.usuarioService.atualizar(this.id()!, dados) : this.usuarioService.criar(dados);

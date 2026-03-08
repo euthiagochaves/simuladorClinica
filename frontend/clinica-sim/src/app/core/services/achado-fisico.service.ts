@@ -12,7 +12,7 @@ export class AchadoFisicoService {
   listar(somenteAtivos?: boolean): Observable<AchadoFisico[]> {
     let params = new HttpParams();
     if (somenteAtivos !== undefined) {
-      params = params.set('somenteAtivos', String(somenteAtivos));
+      params = params.set('apenasAtivos', String(somenteAtivos));
     }
     return this.http.get<AchadoFisico[]>(this.baseUrl, { params });
   }

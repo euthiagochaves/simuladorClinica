@@ -9,8 +9,24 @@
   <div class="formulario-page__corpo">
     @if (carregando()) {
       <p>Cargando configuraciones...</p>
+    } @else if (configuracoes().length === 0) {
+      <p class="config__desc">No hay configuraciones registradas.</p>
     } @else {
       <p class="config__desc">Administre las configuraciones globales de la plataforma.</p>
+      @for (config of configuracoes(); track config.id) {
+        <div class="form-grupo">
+          <label class="form-label">{{ config.chave }}</label>
+          @if (config.descricao) {
+            <small class="form-hint">{{ config.descricao }}</small>
+          }
+          <input
+            type="text"
+            class="form-input"
+            [value]="config.valor"
+            (input)="config.valor = $any($event.target).value"
+          />
+        </div>
+      }
       <div class="form-acoes">
         <button class="btn btn--primary" (click)="salvar()" [disabled]="salvando()">
           {{ salvando() ? 'Guardando...' : 'Guardar Configuración' }}

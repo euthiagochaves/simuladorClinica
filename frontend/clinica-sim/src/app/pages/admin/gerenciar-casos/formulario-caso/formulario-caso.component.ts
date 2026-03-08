@@ -22,11 +22,11 @@ export class FormularioCasoComponent implements OnInit {
 
   titulo = signal('');
   nomePaciente = signal('');
-  idadePaciente = signal<number>(0);
-  sexoPaciente = signal('');
+  idade = signal<number>(0);
+  sexo = signal('');
   queixaPrincipal = signal('');
   triagem = signal('');
-  descricao = signal('');
+  resumo = signal('');
   ativo = signal(true);
 
   get modoEdicao(): boolean { return this.id() !== null; }
@@ -44,11 +44,11 @@ export class FormularioCasoComponent implements OnInit {
       next: (caso) => {
         this.titulo.set(caso.titulo);
         this.nomePaciente.set(caso.nomePaciente);
-        this.idadePaciente.set(caso.idadePaciente);
-        this.sexoPaciente.set(caso.sexoPaciente);
+        this.idade.set(caso.idade);
+        this.sexo.set(caso.sexo);
         this.queixaPrincipal.set(caso.queixaPrincipal);
-        this.triagem.set(caso.triagem);
-        this.descricao.set(caso.descricao || '');
+        this.triagem.set(caso.triagem || '');
+        this.resumo.set(caso.resumo || '');
         this.ativo.set(caso.ativo);
       },
       error: (err) => this.erro.set(err.mensagemAmigavel || 'Error al cargar.')
@@ -59,11 +59,11 @@ export class FormularioCasoComponent implements OnInit {
     const dados: Partial<CasoClinico> = {
       titulo: this.titulo(),
       nomePaciente: this.nomePaciente(),
-      idadePaciente: this.idadePaciente(),
-      sexoPaciente: this.sexoPaciente(),
+      idade: this.idade(),
+      sexo: this.sexo(),
       queixaPrincipal: this.queixaPrincipal(),
       triagem: this.triagem(),
-      descricao: this.descricao(),
+      resumo: this.resumo(),
       ativo: this.ativo()
     };
 

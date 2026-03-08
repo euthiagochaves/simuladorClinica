@@ -1,7 +1,8 @@
 export interface Usuario {
   id: number;
-  nome: string;
+  nomeCompleto: string;
   email: string;
   perfil: string;
   ativo: boolean;
+  criadoEm?: string;
 }

@@ -9,8 +9,8 @@
     },
     {
       "name": "frontend",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": ["start", "--prefix", "frontend/clinica-sim"],
+      "runtimeExecutable": "cmd.exe",
+      "runtimeArgs": ["/c", "cd frontend\\clinica-sim && npx ng serve --port 4200"],
       "port": 4200
     }
   ]

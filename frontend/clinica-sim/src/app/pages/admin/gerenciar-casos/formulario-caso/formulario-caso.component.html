@@ -19,11 +19,11 @@
     </div>
     <div class="form-campo">
       <label>Edad *</label>
-      <input type="number" [value]="idadePaciente()" (input)="idadePaciente.set(+$any($event.target).value)" min="0" max="120" />
+      <input type="number" [value]="idade()" (input)="idade.set(+$any($event.target).value)" min="0" max="120" />
     </div>
     <div class="form-campo">
       <label>Sexo *</label>
-      <select [value]="sexoPaciente()" (change)="sexoPaciente.set($any($event.target).value)">
+      <select [value]="sexo()" (change)="sexo.set($any($event.target).value)">
         <option value="">Seleccione...</option>
         <option value="Masculino">Masculino</option>
         <option value="Femenino">Femenino</option>
@@ -44,8 +44,8 @@
       </select>
     </div>
     <div class="form-campo">
-      <label>Descripción</label>
-      <textarea rows="4" [value]="descricao()" (input)="descricao.set($any($event.target).value)" placeholder="Descripción detallada del caso..."></textarea>
+      <label>Resumen</label>
+      <textarea rows="4" [value]="resumo()" (input)="resumo.set($any($event.target).value)" placeholder="Resumen del caso clínico..."></textarea>
     </div>
     <div class="form-campo form-campo--checkbox">
       <input type="checkbox" id="ativo" [checked]="ativo()" (change)="ativo.set($any($event.target).checked)" />

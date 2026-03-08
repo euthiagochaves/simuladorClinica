@@ -7,15 +7,23 @@
   <div class="formulario-page__corpo">
     <div class="form-campo">
       <label>Texto de la Pregunta *</label>
-      <textarea rows="3" [value]="textoPergunta()" (input)="textoPergunta.set($any($event.target).value)" placeholder="¿...?"></textarea>
+      <textarea rows="3" [value]="texto()" (input)="texto.set($any($event.target).value)" placeholder="¿...?"></textarea>
     </div>
     <div class="form-campo">
-      <label>Categoría</label>
+      <label>Sección *</label>
+      <input type="text" [value]="secao()" (input)="secao.set($any($event.target).value)" placeholder="ej: Anamnese, Exame Físico..." />
+    </div>
+    <div class="form-campo">
+      <label>Categoría *</label>
       <input type="text" [value]="categoria()" (input)="categoria.set($any($event.target).value)" placeholder="ej: dolor, fiebre, antecedentes..." />
     </div>
+    <div class="form-campo">
+      <label>Respuesta por Defecto *</label>
+      <input type="text" [value]="respostaPadrao()" (input)="respostaPadrao.set($any($event.target).value)" placeholder="Respuesta para paciente sano..." />
+    </div>
     <div class="form-campo form-campo--checkbox">
-      <input type="checkbox" id="ativa" [checked]="ativa()" (change)="ativa.set($any($event.target).checked)" />
-      <label for="ativa">Pregunta activa</label>
+      <input type="checkbox" id="ativo" [checked]="ativo()" (change)="ativo.set($any($event.target).checked)" />
+      <label for="ativo">Pregunta activa</label>
     </div>
     <div class="form-acoes">
       <button class="btn btn--primary" (click)="salvar()" [disabled]="salvando()">{{ salvando() ? 'Guardando...' : 'Guardar' }}</button>

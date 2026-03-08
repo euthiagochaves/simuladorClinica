@@ -12,7 +12,7 @@ export class CasoClinicoService {
   listar(somenteAtivos?: boolean): Observable<CasoClinico[]> {
     let params = new HttpParams();
     if (somenteAtivos !== undefined) {
-      params = params.set('somenteAtivos', String(somenteAtivos));
+      params = params.set('apenasAtivos', String(somenteAtivos));
     }
     return this.http.get<CasoClinico[]>(this.baseUrl, { params });
   }

@@ -5,11 +5,11 @@ export interface DiagnosticoDiferencial {
 
 export interface NotaClinica {
   id?: number;
-  sessaoId: number;
   textoResumo: string;
   textoDiagnosticoProvavel: string;
   textoConduta: string;
   diagnosticosDiferenciais: DiagnosticoDiferencial[];
+  criadoEm?: string;
 }
 
 export interface NotaClinicaRequest {

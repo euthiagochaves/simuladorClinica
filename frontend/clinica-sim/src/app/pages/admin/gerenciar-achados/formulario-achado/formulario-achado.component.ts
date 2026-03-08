@@ -18,8 +18,9 @@ export class FormularioAchadoComponent implements OnInit {
   id = signal<number | null>(null);
   salvando = signal(false);
   erro = signal<string | null>(null);
-  nomeAchado = signal('');
+  nome = signal('');
   sistemaCategoria = signal('');
+  resultadoPadrao = signal('');
   ativo = signal(true);
 
   readonly sistemas = ['EstadoGeral', 'Cardiovascular', 'Digestivo', 'Respiratorio', 'Nefrologico', 'Neurologico', 'Osteoarticular'];
@@ -31,14 +32,14 @@ export class FormularioAchadoComponent implements OnInit {
     if (idParam) {
       this.id.set(Number(idParam));
       this.achadoService.buscarPorId(Number(idParam)).subscribe({
-        next: (a) => { this.nomeAchado.set(a.nomeAchado); this.sistemaCategoria.set(a.sistemaCategoria); this.ativo.set(a.ativo); },
+        next: (a) => { this.nome.set(a.nome); this.sistemaCategoria.set(a.sistemaCategoria); this.resultadoPadrao.set(a.resultadoPadrao); this.ativo.set(a.ativo); },
         error: (err) => this.erro.set(err.mensagemAmigavel || 'Error al cargar.')
       });
     }
   }
 
   salvar(): void {
-    const dados: Partial<AchadoFisico> = { nomeAchado: this.nomeAchado(), sistemaCategoria: this.sistemaCategoria(), ativo: this.ativo() };
+    const dados: Partial<AchadoFisico> = { nome: this.nome(), sistemaCategoria: this.sistemaCategoria(), resultadoPadrao: this.resultadoPadrao(), ativo: this.ativo() };
     this.salvando.set(true);
     this.erro.set(null);
     const obs = this.modoEdicao ? this.achadoService.atualizar(this.id()!, dados) : this.achadoService.criar(dados);

@@ -8,14 +8,14 @@
   @for (evento of eventos; track evento.id) {
     <div class="chat__evento">
       <span class="chat__tempo">{{ formatarTempo(evento.segundosDesdeInicio) }}</span>
-      @if (evento.tipo === 'Pergunta') {
+      @if (evento.tipo === 'PerguntaClicada') {
         <div class="chat__mensagem chat__mensagem--medico">
           <strong>Médico:</strong> {{ evento.textoExibido }}
         </div>
         <div class="chat__mensagem chat__mensagem--paciente">
           <strong>Paciente:</strong> {{ evento.textoResposta }}
         </div>
-      } @else if (evento.tipo === 'Achado') {
+      } @else if (evento.tipo === 'AchadoSelecionado') {
         <div class="chat__mensagem chat__mensagem--exame">
           <strong>Examen Físico:</strong> {{ evento.textoExibido }}: {{ evento.textoResposta }}
         </div>

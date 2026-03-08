@@ -7,7 +7,7 @@
   <div class="formulario-page__corpo">
     <div class="form-campo">
       <label>Nombre del Hallazgo *</label>
-      <input type="text" [value]="nomeAchado()" (input)="nomeAchado.set($any($event.target).value)" placeholder="ej: Auscultación cardíaca" />
+      <input type="text" [value]="nome()" (input)="nome.set($any($event.target).value)" placeholder="ej: Auscultación cardíaca" />
     </div>
     <div class="form-campo">
       <label>Sistema / Categoría *</label>
@@ -15,6 +15,10 @@
         <option value="">Seleccione un sistema...</option>
         @for (s of sistemas; track s) { <option [value]="s">{{ s }}</option> }
       </select>
+    </div>
+    <div class="form-campo">
+      <label>Resultado por Defecto *</label>
+      <input type="text" [value]="resultadoPadrao()" (input)="resultadoPadrao.set($any($event.target).value)" placeholder="Resultado para paciente sano..." />
     </div>
     <div class="form-campo form-campo--checkbox">
       <input type="checkbox" id="ativo" [checked]="ativo()" (change)="ativo.set($any($event.target).checked)" />

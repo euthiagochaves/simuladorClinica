@@ -22,7 +22,7 @@ export class ListaUsuariosComponent implements OnInit {
   get usuariosFiltrados(): Usuario[] {
     const texto = this.filtro().toLowerCase();
     if (!texto) return this.usuarios();
-    return this.usuarios().filter(u => u.nome.toLowerCase().includes(texto) || u.email.toLowerCase().includes(texto));
+    return this.usuarios().filter(u => u.nomeCompleto.toLowerCase().includes(texto) || u.email.toLowerCase().includes(texto));
   }
 
   ngOnInit(): void { this.carregar(); }

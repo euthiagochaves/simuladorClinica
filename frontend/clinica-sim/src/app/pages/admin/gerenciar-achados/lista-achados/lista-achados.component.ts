@@ -22,7 +22,7 @@ export class ListaAchadosComponent implements OnInit {
   get achadosFiltrados(): AchadoFisico[] {
     const texto = this.filtro().toLowerCase();
     if (!texto) return this.achados();
-    return this.achados().filter(a => a.nomeAchado.toLowerCase().includes(texto) || a.sistemaCategoria?.toLowerCase().includes(texto));
+    return this.achados().filter(a => a.nome.toLowerCase().includes(texto) || a.sistemaCategoria?.toLowerCase().includes(texto));
   }
 
   ngOnInit(): void { this.carregar(); }

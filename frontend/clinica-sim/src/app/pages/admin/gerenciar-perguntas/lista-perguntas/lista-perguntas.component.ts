@@ -22,7 +22,7 @@ export class ListaPerguntasComponent implements OnInit {
   get perguntasFiltradas(): Pergunta[] {
     const texto = this.filtro().toLowerCase();
     if (!texto) return this.perguntas();
-    return this.perguntas().filter(p => p.textoPergunta.toLowerCase().includes(texto) || p.categoria?.toLowerCase().includes(texto));
+    return this.perguntas().filter(p => p.texto.toLowerCase().includes(texto) || p.categoria?.toLowerCase().includes(texto));
   }
 
   ngOnInit(): void { this.carregar(); }
