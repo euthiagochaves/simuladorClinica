@@ -1,0 +1,26 @@
+<div class="formulario-page">
+  <div class="formulario-page__header">
+    <h1 class="formulario-page__titulo">Importación YAML</h1>
+  </div>
+
+  @if (erro()) { <div class="alerta alerta--erro">{{ erro() }}</div> }
+  @if (sucesso()) { <div class="alerta alerta--sucesso">{{ sucesso() }}</div> }
+
+  <div class="formulario-page__corpo">
+    <p class="importacao__desc">
+      Importe casos clínicos, preguntas y hallazgos desde un archivo YAML.
+    </p>
+    <div class="form-campo">
+      <label>Seleccionar archivo YAML *</label>
+      <input type="file" accept=".yaml,.yml" (change)="onArquivoSelecionado($event)" />
+    </div>
+    @if (arquivo()) {
+      <p class="importacao__archivo">Archivo seleccionado: <strong>{{ arquivo()!.name }}</strong></p>
+    }
+    <div class="form-acoes">
+      <button class="btn btn--primary" (click)="importar()" [disabled]="!arquivo() || enviando()">
+        {{ enviando() ? 'Importando...' : '📥 Importar' }}
+      </button>
+    </div>
+  </div>
+</div>

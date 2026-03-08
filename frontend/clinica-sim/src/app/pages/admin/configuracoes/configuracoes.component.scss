@@ -1,0 +1,8 @@
+@use '../admin-shared' as shared;
+@include shared.formulario-styles;
+
+.config__desc {
+  color: #555;
+  margin-bottom: 1rem;
+  font-size: 0.95rem;
+}

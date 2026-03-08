@@ -1,0 +1,39 @@
+.info-paciente {
+  background: #e8f4fd;
+  border: 1px solid #bee3f8;
+  border-radius: 8px;
+  padding: 1rem 1.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+
+  &__campo {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.95rem;
+
+    &--largo {
+      flex: 1;
+      min-width: 200px;
+    }
+  }
+}
+
+.label {
+  font-weight: 600;
+  color: #1a5f7a;
+}
+
+.triagem {
+  display: inline-block;
+  padding: 0.15rem 0.6rem;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+
+  &--urgente { background: #ffe5e5; color: #c0392b; }
+  &--normal { background: #e8f5e9; color: #2e7d32; }
+  &--prioritario { background: #fff3e0; color: #e65100; }
+}

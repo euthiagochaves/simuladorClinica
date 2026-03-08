@@ -1,0 +1,34 @@
+<div class="painel-exame">
+  @if (carregando()) {
+    <p class="painel-exame__info">Cargando hallazgos...</p>
+  } @else {
+    <div class="painel-exame__grupos">
+      @for (grupo of grupos(); track grupo.sistema) {
+        <div class="grupo">
+          <button class="grupo__cabecalho" (click)="toggleGrupo(grupo)">
+            <span class="grupo__icone">{{ grupo.expandido ? '▼' : '▶' }}</span>
+            <span class="grupo__nome">{{ grupo.sistema }}</span>
+          </button>
+          @if (grupo.expandido) {
+            <div class="grupo__lista">
+              @for (achado of grupo.achados; track achado.id) {
+                <label class="grupo__item" [class.grupo__item--selecionado]="jaFoiSelecionado(achado.id)">
+                  <input
+                    type="checkbox"
+                    [checked]="jaFoiSelecionado(achado.id)"
+                    (change)="selecionarAchado(achado)"
+                    class="grupo__checkbox"
+                  />
+                  {{ achado.nomeAchado }}
+                </label>
+              }
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+  <div class="painel-exame__rodape">
+    <span>Hallazgos seleccionados: <strong>{{ totalSelecionados }}</strong></span>
+  </div>
+</div>

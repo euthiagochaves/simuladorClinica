@@ -1,0 +1,62 @@
+<div class="lista-page">
+  <div class="lista-page__header">
+    <h1 class="lista-page__titulo">Casos Clínicos</h1>
+    <a routerLink="/admin/casos/novo" class="btn btn--primary">+ Nuevo Caso</a>
+  </div>
+
+  @if (erro()) {
+    <div class="alerta alerta--erro">{{ erro() }}</div>
+  }
+
+  <div class="lista-page__busca">
+    <input
+      type="text"
+      class="input-busca"
+      placeholder="Buscar por título o paciente..."
+      [value]="filtro()"
+      (input)="filtro.set($any($event.target).value)"
+    />
+  </div>
+
+  @if (carregando()) {
+    <app-loading-spinner />
+  } @else {
+    <div class="tabla-wrapper">
+      <table class="tabla">
+        <thead>
+          <tr>
+            <th>Título</th>
+            <th>Paciente</th>
+            <th>Edad</th>
+            <th>Activo</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (caso of casosFiltrados; track caso.id) {
+            <tr>
+              <td>{{ caso.titulo }}</td>
+              <td>{{ caso.nomePaciente }}</td>
+              <td>{{ caso.idadePaciente }}</td>
+              <td>
+                <span class="badge" [class.badge--ativo]="caso.ativo" [class.badge--inativo]="!caso.ativo">
+                  {{ caso.ativo ? '✓' : '✗' }}
+                </span>
+              </td>
+              <td class="tabla__acciones">
+                <a [routerLink]="['/admin/casos', caso.id, 'editar']" class="btn-icon" title="Editar">✏️</a>
+                <button class="btn-icon" (click)="excluir(caso.id, caso.titulo)" title="Eliminar">🗑️</button>
+              </td>
+            </tr>
+          }
+          @empty {
+            <tr>
+              <td colspan="5" class="tabla__vazio">No se encontraron casos clínicos.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <p class="lista-page__total">Mostrando {{ casosFiltrados.length }} de {{ casos().length }} casos</p>
+  }
+</div>
