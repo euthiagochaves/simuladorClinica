@@ -33,7 +33,11 @@
       "Bash(node /tmp/write_all.js)",
       "Bash(tee \"C:/DEV/simuladorClinica/.claude/worktrees/backend-implementation/backend/ClinicaSim.API/Controllers/test.txt\" Hello it is a test with single quotes like it 's and \"double\" quotes HEREDOCEND echo \"Exit: $?\")",
       "Bash(cat:*)",
-      "Bash(git add -A)"
+      "Bash(git add -A)",
+      "Bash(dotnet add package Scalar.AspNetCore --version 2.4.12)",
+      "Bash(dotnet add package Scalar.AspNetCore)",
+      "Bash(taskkill //F //PID 24544)",
+      "Bash(taskkill //F //IM ClinicaSim.API.exe)"
     ]
   }
 }

@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Scalar.AspNetCore;
 using ClinicaSim.API.Data;
 using ClinicaSim.API.Services;
 using ClinicaSim.API.Services.Interfaces;
@@ -46,10 +47,26 @@ var app = builder.Build();
 // Pipeline de middlewares HTTP
 // =========================================================================
 
-// Swagger/OpenAPI disponivel apenas em desenvolvimento
+// Documentacao da API disponivel apenas em desenvolvimento
 if (app.Environment.IsDevelopment())
 {
+    // Endpoint OpenAPI JSON: /openapi/v1.json
     app.MapOpenApi();
+
+    // Interface visual Scalar: /scalar/v1
+    app.MapScalarApiReference(options =>
+    {
+        options
+            .WithTitle("ClinicaSim API")
+            .WithTheme(ScalarTheme.BluePlanet)
+            .WithDefaultHttpClient(ScalarTarget.JavaScript, ScalarClient.Fetch);
+    });
+
+    // Redirecionar /swagger para /scalar/v1 (conveniencia)
+    app.MapGet("/swagger", () => Results.Redirect("/scalar/v1"))
+       .ExcludeFromDescription();
+    app.MapGet("/swagger/index.html", () => Results.Redirect("/scalar/v1"))
+       .ExcludeFromDescription();
 }
 
 // Habilitar CORS antes dos demais middlewares
