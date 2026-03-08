@@ -6,10 +6,10 @@ export default function HomePage() {
     <div className="container mx-auto px-4 py-8">
       {/* Hero Section */}
       <section className="mb-12 text-center">
-        <h1 className="mb-4 text-4xl font-bold tracking-tight text-balance sm:text-5xl">
+        <h1 className="mb-4 text-4xl font-bold tracking-tight sm:text-5xl">
           Simulador de Atendimento Clinico
         </h1>
-        <p className="mx-auto max-w-2xl text-lg text-muted-foreground text-pretty">
+        <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
           Pratique suas habilidades clinicas com casos simulados. Realize anamnese,
           exame fisico e chegue ao diagnostico correto.
         </p>
