@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClinicaSim - Fluxogramas do Sistema</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            padding: 40px 20px;
+        }
+        h1 {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: #38bdf8;
+        }
+        h1 span { color: #f472b6; }
+        .subtitle {
+            text-align: center;
+            color: #94a3b8;
+            margin-bottom: 50px;
+            font-size: 0.95rem;
+        }
+        .section {
+            max-width: 1100px;
+            margin: 0 auto 60px auto;
+            background: #1e293b;
+            border-radius: 16px;
+            padding: 30px;
+            border: 1px solid #334155;
+        }
+        .section h2 {
+            color: #38bdf8;
+            font-size: 1.3rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .section h2 .badge {
+            background: #38bdf8;
+            color: #0f172a;
+            font-size: 0.7rem;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-weight: 700;
+        }
+        .section p.desc {
+            color: #94a3b8;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
+        .mermaid {
+            display: flex;
+            justify-content: center;
+            background: #0f172a;
+            border-radius: 12px;
+            padding: 20px;
+            overflow-x: auto;
+        }
+        .mermaid svg { max-width: 100%; }
+    </style>
+</head>
+<body>
+
+<h1>Clinica<span>Sim</span> - Fluxogramas</h1>
+<p class="subtitle">Visao completa dos fluxos do sistema</p>
+
+<!-- FLUXO 1: VISAO GERAL -->
+<div class="section">
+    <h2>1. Visao Geral do Sistema <span class="badge">MACRO</span></h2>
+    <p class="desc">Fluxo principal mostrando os tres perfis e suas acoes no sistema.</p>
+    <div class="mermaid">
+flowchart TB
+    subgraph SISTEMA["CLINICASIM"]
+        direction TB
+
+        subgraph ADMIN["ADMINISTRADOR"]
+            A1["Gerenciar Usuarios"]
+            A2["Gerenciar Banco Global\nde Perguntas"]
+            A3["Gerenciar Banco Global\nde Achados Fisicos"]
+            A4["Importar Casos\nvia YAML"]
+        end
+
+        subgraph PROF["PROFESSOR"]
+            P1["Criar/Editar\nCasos Clinicos"]
+            P2["Configurar Respostas\nEspecificas do Caso"]
+            P3["Configurar Achados\nFisicos do Caso"]
+            P4["Revisar Resultados\nde Alunos"]
+        end
+
+        subgraph ALUNO["ALUNO"]
+            S1["Ver Lista de\nCasos Disponiveis"]
+            S2["Iniciar Atendimento"]
+            S3["Realizar Anamnese"]
+            S4["Realizar Exame Fisico"]
+            S5["Escrever Historia Clinica"]
+            S6["Finalizar Sessao"]
+            S7["Exportar PDF"]
+        end
+
+        S1 --> S2 --> S3 --> S4 --> S5 --> S6 --> S7
+    end
+
+    style SISTEMA fill:#1e293b,stroke:#334155,color:#e2e8f0
+    style ADMIN fill:#7c3aed22,stroke:#7c3aed,color:#e2e8f0
+    style PROF fill:#f59e0b22,stroke:#f59e0b,color:#e2e8f0
+    style ALUNO fill:#10b98122,stroke:#10b981,color:#e2e8f0
+    </div>
+</div>
+
+<!-- FLUXO 2: SESSAO DO ALUNO -->
+<div class="section">
+    <h2>2. Fluxo Completo da Sessao do Aluno <span class="badge">CORE</span></h2>
+    <p class="desc">Passo a passo detalhado do atendimento simulado, desde selecionar o caso ate exportar o PDF.</p>
+    <div class="mermaid">
+flowchart TD
+    START(["INICIO"]) --> LIST["Lista de Casos\nClinicos Disponiveis"]
+    LIST --> SELECT["Aluno Seleciona\num Caso"]
+    SELECT --> SESSION["Sistema Cria Sessao\n(SessionCode unico)"]
+    SESSION --> LOAD["Carrega Dados do Paciente\n(nome, idade, sexo, queixa, triagem)"]
+    LOAD --> TELA["Tela de Atendimento\n3 areas: Info | Chat | Painel"]
+
+    TELA --> TAB{"Aluno escolhe aba"}
+
+    TAB -->|Anamnesis| ANAM["Seleciona Pergunta\n(dropdown pesquisavel)"]
+    TAB -->|Examen Fisico| EXAM["Seleciona Achado\n(por sistema clinico)"]
+    TAB -->|Historia Clinica| HC["Preenche Campos\nEstruturados"]
+
+    ANAM --> RESP_Q["Sistema busca resposta\n(caso > padrao global)"]
+    RESP_Q --> EVENT_Q["Registra Evento\nQuestionClicked"]
+    EVENT_Q --> CHAT_Q["Exibe no Chat:\nMedico: pergunta\nPaciente: resposta"]
+    CHAT_Q --> TAB
+
+    EXAM --> RESP_F["Sistema busca resultado\n(caso > padrao global)"]
+    RESP_F --> EVENT_F["Registra Evento\nFindingSelected"]
+    EVENT_F --> CHAT_F["Exibe no Chat:\nExamen Fisico: achado resultado"]
+    CHAT_F --> TAB
+
+    HC --> CAMPOS["Preenche:\n1. Resumen\n2. Diagnostico Probable\n3. 5 Diag. Diferenciales\n4. Conducta"]
+    CAMPOS --> VALID{"Todos campos\nobrigatorios\npreenchidos?"}
+    VALID -->|Nao| CAMPOS
+    VALID -->|Sim| FIN["Botao Finalizar\nAtendimento"]
+    FIN --> DONE["Sessao Finalizada\n(status: Finished)"]
+    DONE --> PDF["Gerar PDF Baixavel"]
+    PDF --> OPCOES{"Proximo passo?"}
+    OPCOES -->|Outro caso| LIST
+    OPCOES -->|Refazer mesmo| SELECT
+    OPCOES -->|Sair| ENDX(["FIM"])
+
+    style START fill:#10b981,stroke:#10b981,color:#fff
+    style ENDX fill:#ef4444,stroke:#ef4444,color:#fff
+    style VALID fill:#f59e0b,stroke:#f59e0b,color:#000
+    style TAB fill:#38bdf8,stroke:#38bdf8,color:#000
+    style OPCOES fill:#38bdf8,stroke:#38bdf8,color:#000
+    </div>
+</div>
+
+<!-- FLUXO 3: RESOLUCAO DE RESPOSTAS -->
+<div class="section">
+    <h2>3. Logica de Resolucao de Respostas <span class="badge">REGRA CENTRAL</span></h2>
+    <p class="desc">Como o sistema decide qual resposta retornar: prioridade para resposta do caso, fallback para padrao global.</p>
+    <div class="mermaid">
+flowchart TD
+    INPUT["Aluno seleciona\npergunta ou achado"] --> CHECK{"Existe resposta\nespecifica\npara este CASO?"}
+
+    CHECK -->|SIM| CASE_RESP["Usa resposta\nespecifica do caso\n(CaseQuestionAnswers ou\nCasePhysicalFindings)"]
+    CHECK -->|NAO| DEFAULT["Usa resposta padrao\nglobal (QuestionBank.DefaultAnswer\nou PhysicalFindingBank.DefaultResultText)"]
+
+    CASE_RESP --> LOG["Registra Evento\nna tabela SessionEvents"]
+    DEFAULT --> LOG
+
+    LOG --> DISPLAY["Exibe no Chat\ncom timestamp relativo"]
+
+    NOTE["O banco global = paciente SAUDAVEL\nO caso sobrescreve = o que e PATOLOGICO"]
+
+    style CHECK fill:#f59e0b,stroke:#f59e0b,color:#000
+    style CASE_RESP fill:#10b981,stroke:#10b981,color:#fff
+    style DEFAULT fill:#6366f1,stroke:#6366f1,color:#fff
+    style NOTE fill:#334155,stroke:#94a3b8,color:#94a3b8
+    </div>
+</div>
+
+<!-- FLUXO 4: MODELO DE DADOS -->
+<div class="section">
+    <h2>4. Modelo de Dados (Relacionamentos) <span class="badge">DATABASE</span></h2>
+    <p class="desc">Relacionamento entre as 15 tabelas do PostgreSQL/Supabase.</p>
+    <div class="mermaid">
+erDiagram
+    USERS ||--o{ CLINICAL_CASES : cria
+    USERS ||--o{ SESSIONS : realiza
+    USERS ||--o{ AUDIT_LOGS : gera
+    USERS ||--o{ CASE_IMPORT_LOGS : importa
+
+    CLINICAL_CASES ||--o{ CASE_QUESTION_ANSWERS : tem
+    CLINICAL_CASES ||--o{ CASE_PHYSICAL_FINDINGS : tem
+    CLINICAL_CASES ||--o{ SESSIONS : atendido_em
+    CLINICAL_CASES ||--o{ CASE_ATTACHMENTS : possui
+
+    QUESTION_BANK ||--o{ CASE_QUESTION_ANSWERS : sobrescrita_por
+    PHYSICAL_FINDING_BANK ||--o{ CASE_PHYSICAL_FINDINGS : sobrescrita_por
+
+    SESSIONS ||--o{ SESSION_EVENTS : registra
+    SESSIONS ||--|| CLINICAL_NOTES : possui
+    SESSIONS ||--o{ DIFFERENTIAL_DIAGNOSES : contem
+    SESSIONS ||--o| SESSION_PDFS : gera
+
+    QUESTION_BANK {
+        int Id PK
+        string Text
+        string Category
+        string DefaultAnswer
+    }
+
+    PHYSICAL_FINDING_BANK {
+        int Id PK
+        string Name
+        string SystemCategory
+        string DefaultResultText
+    }
+
+    CLINICAL_CASES {
+        int Id PK
+        string Title
+        string PatientName
+        int Age
+        string ChiefComplaint
+        string Triage
+    }
+
+    SESSIONS {
+        int Id PK
+        string SessionCode
+        string Status
+        datetime StartedAt
+        datetime FinishedAt
+    }
+
+    SESSION_EVENTS {
+        int Id PK
+        string Type
+        string DisplayText
+        string ResponseText
+        int RelativeSecondsFromStart
+    }
+
+    CLINICAL_NOTES {
+        int Id PK
+        string SummaryText
+        string ProbableDiagnosisText
+        string ConductText
+    }
+
+    DIFFERENTIAL_DIAGNOSES {
+        int Id PK
+        int PriorityOrder
+        string DiagnosisText
+    }
+    </div>
+</div>
+
+<!-- FLUXO 5: AREA ADMIN/PROFESSOR -->
+<div class="section">
+    <h2>5. Fluxo Administrativo (Professor/Admin) <span class="badge">ADMIN</span></h2>
+    <p class="desc">Como professores criam casos e admins gerenciam bancos globais.</p>
+    <div class="mermaid">
+flowchart TD
+    subgraph ADMIN_FLOW["ADMINISTRADOR"]
+        AD1["Gerenciar Banco\nGlobal de Perguntas"] --> AD1A["Criar/Editar/Desativar\nPerguntas + Resposta Padrao"]
+        AD2["Gerenciar Banco\nGlobal de Achados"] --> AD2A["Criar/Editar/Desativar\nAchados + Resultado Padrao"]
+        AD3["Gerenciar Usuarios"] --> AD3A["Criar/Editar/Desativar\nAlunos, Professores, Admins"]
+    end
+
+    subgraph PROF_FLOW["PROFESSOR"]
+        direction TD
+        PR1["Criar Caso Clinico\n(titulo, paciente, queixa, triagem)"]
+        PR1 --> PR2["Configurar Respostas\nEspecificas de Anamnese"]
+        PR2 --> PR3["Configurar Achados\nEspecificos de Exame Fisico"]
+        PR3 --> PR4["Ativar Caso"]
+        PR4 --> PR5["Caso disponivel\npara alunos"]
+
+        PR6["OU: Importar via YAML"]
+        PR6 --> PR7["Upload arquivo YAML"]
+        PR7 --> PR8{"Validacao"}
+        PR8 -->|OK| PR9["Caso criado\nautomaticamente"]
+        PR8 -->|Erro| PR10["Log de erro\n(CaseImportLogs)"]
+    end
+
+    style ADMIN_FLOW fill:#7c3aed22,stroke:#7c3aed,color:#e2e8f0
+    style PROF_FLOW fill:#f59e0b22,stroke:#f59e0b,color:#e2e8f0
+    </div>
+</div>
+
+<!-- FLUXO 6: TELA DE ATENDIMENTO -->
+<div class="section">
+    <h2>6. Layout da Tela de Atendimento <span class="badge">UI</span></h2>
+    <p class="desc">Estrutura visual da tela principal onde o aluno realiza o atendimento.</p>
+    <div style="background:#0f172a; border-radius:12px; padding:30px; font-family: monospace; font-size: 14px; line-height: 1.6; color: #e2e8f0;">
+<pre style="color:#e2e8f0;">
++============================================================================+
+|                          CLINICASIM - Atendimento                          |
++============================================================================+
+|                                                                            |
+|  +-- INFO DO PACIENTE ------------------------------------------------+   |
+|  |  Nome: Paciente Ficticio 002  |  Idade: 28  |  Sexo: M             |   |
+|  |  Queixa: Dolor abdominal en fosa iliaca derecha  |  Triaje: Verde  |   |
+|  +------------------------------------------------------------------- +   |
+|                                                                            |
+|  +-- CHAT CLINICO (centro) ----+  +-- PAINEL NAVEGACAO (direita) ------+  |
+|  | [altura fixa, scroll]       |  |                                    |  |
+|  |                             |  |  [Anamnesis] [Ex.Fisico] [H.Clin.] |  |
+|  | Medico: Cual es la          |  |                                    |  |
+|  |   principal molestia?       |  |  Aba Anamnesis:                    |  |
+|  | Paciente: Dolor abdominal   |  |  [v] Dropdown pesquisavel          |  |
+|  |   desde ayer...             |  |    - Cual es la principal...       |  |
+|  |                             |  |    - El dolor es continuo...       |  |
+|  | Medico: El dolor es         |  |    - Que intensidad tiene...       |  |
+|  |   continuo o intermitente?  |  |                                    |  |
+|  | Paciente: Es continuo       |  |  Aba Examen Fisico:               |  |
+|  |   con picos mas fuertes.    |  |    Estado General                  |  |
+|  |                             |  |    Ap. Cardiovascular              |  |
+|  | Examen Fisico:              |  |    Ap. Digestivo                   |  |
+|  |   Signo de rebote:          |  |    Sist. Respiratorio              |  |
+|  |   Positivo discreto         |  |    Sist. Neurologico               |  |
+|  |                             |  |                                    |  |
+|  | ...                         |  |  Aba Historia Clinica:             |  |
+|  |                             |  |    [Resumen          ]             |  |
+|  |                             |  |    [Diag. Probable   ]             |  |
+|  |                             |  |    [5 Diag. Diferenc.]             |  |
+|  |                             |  |    [Conducta         ]             |  |
+|  |                             |  |                                    |  |
+|  +-----------------------------+  |  [FINALIZAR]  [GENERAR PDF]        |  |
+|                                   +------------------------------------+  |
++============================================================================+
+</pre>
+    </div>
+</div>
+
+<script>
+    mermaid.initialize({
+        startOnLoad: true,
+        theme: 'dark',
+        themeVariables: {
+            primaryColor: '#38bdf8',
+            primaryTextColor: '#e2e8f0',
+            primaryBorderColor: '#334155',
+            lineColor: '#64748b',
+            secondaryColor: '#1e293b',
+            tertiaryColor: '#0f172a',
+            background: '#0f172a',
+            mainBkg: '#1e293b',
+            nodeBorder: '#334155',
+            clusterBkg: '#1e293b22',
+            clusterBorder: '#334155',
+            titleColor: '#e2e8f0',
+            edgeLabelBackground: '#1e293b',
+            fontSize: '14px'
+        },
+        flowchart: {
+            useMaxWidth: true,
+            htmlLabels: true,
+            curve: 'basis'
+        },
+        er: {
+            useMaxWidth: true,
+            fontSize: 12
+        }
+    });
+</script>
+
+</body>
+</html>

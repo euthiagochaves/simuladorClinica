@@ -1,0 +1,66 @@
+# =============================================
+# ClinicaSim - .gitignore
+# =============================================
+
+# ---- Node / Angular ----
+node_modules/
+dist/
+.angular/
+.npm
+*.tgz
+.sass-cache/
+connect.lock
+coverage/
+libpeerconnection.log
+testem.log
+typings/
+.nyc_output/
+
+# ---- .NET ----
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+publish/
+project.lock.json
+*.nuget.props
+*.nuget.targets
+.nuget/
+BundleArtifacts/
+
+# ---- IDE ----
+.vs/
+.vscode/*
+!.vscode/launch.json
+!.vscode/tasks.json
+.idea/
+*.swp
+*.swo
+*~
+
+# ---- Ambiente / Secrets ----
+.env
+.env.*
+appsettings.*.local.json
+*.pfx
+*.key
+
+# ---- OS ----
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# ---- Logs ----
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ---- Misc ----
+*.tmp
+*.temp
+*.bak

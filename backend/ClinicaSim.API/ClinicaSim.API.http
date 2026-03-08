@@ -1,0 +1,6 @@
+@ClinicaSim.API_HostAddress = http://localhost:5122
+
+GET {{ClinicaSim.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
