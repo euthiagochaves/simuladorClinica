@@ -103,25 +103,60 @@ public class SessaoService : ISessaoService
         if (sessao is null)
             throw new InvalidOperationException($"Sessao com Id {sessaoId} nao encontrada.");
 
-        var perguntaId = request.PerguntaId;
+        var possuiPerguntaGlobal = request.PerguntaId.HasValue;
+        var possuiPerguntaCaso = request.PerguntaCasoId.HasValue;
 
-        // Busca a pergunta no banco global
-        var pergunta = await _contexto.Perguntas
-            .AsNoTracking()
-            .FirstOrDefaultAsync(p => p.Id == perguntaId);
+        if (possuiPerguntaGlobal == possuiPerguntaCaso)
+        {
+            throw new InvalidOperationException(
+                "Informe exatamente um identificador: PerguntaId (global) ou PerguntaCasoId (especifica do caso).");
+        }
 
-        if (pergunta is null)
-            throw new InvalidOperationException($"Pergunta com Id {perguntaId} nao encontrada.");
+        string textoExibido;
+        string textoResposta;
+        int referenciaId;
 
-        // Busca resposta especifica do caso para esta pergunta
-        var respostaCaso = await _contexto.RespostasCasosPerguntas
-            .AsNoTracking()
-            .FirstOrDefaultAsync(r => r.CasoClinicoId == sessao.CasoClinicoId && r.PerguntaId == perguntaId);
+        if (possuiPerguntaCaso)
+        {
+            var perguntaCasoId = request.PerguntaCasoId!.Value;
 
-        // Se encontrou resposta especifica, usa ela; senao, usa a resposta padrao da pergunta
-        var textoResposta = respostaCaso != null
-            ? respostaCaso.TextoResposta
-            : pergunta.RespostaPadrao;
+            var perguntaCaso = await _contexto.PerguntasCasos
+                .AsNoTracking()
+                .FirstOrDefaultAsync(p => p.Id == perguntaCasoId && p.CasoClinicoId == sessao.CasoClinicoId);
+
+            if (perguntaCaso is null)
+                throw new InvalidOperationException(
+                    $"Pergunta especifica com Id {perguntaCasoId} nao encontrada para o caso clinico da sessao.");
+
+            textoExibido = perguntaCaso.Texto;
+            textoResposta = perguntaCaso.RespostaPadrao;
+            referenciaId = perguntaCaso.Id;
+        }
+        else
+        {
+            var perguntaId = request.PerguntaId!.Value;
+
+            // Busca a pergunta no banco global
+            var pergunta = await _contexto.Perguntas
+                .AsNoTracking()
+                .FirstOrDefaultAsync(p => p.Id == perguntaId);
+
+            if (pergunta is null)
+                throw new InvalidOperationException($"Pergunta com Id {perguntaId} nao encontrada.");
+
+            // Busca resposta especifica do caso para esta pergunta
+            var respostaCaso = await _contexto.RespostasCasosPerguntas
+                .AsNoTracking()
+                .FirstOrDefaultAsync(r => r.CasoClinicoId == sessao.CasoClinicoId && r.PerguntaId == perguntaId);
+
+            // Se encontrou resposta especifica, usa ela; senao, usa a resposta padrao da pergunta
+            textoResposta = respostaCaso != null
+                ? respostaCaso.TextoResposta
+                : pergunta.RespostaPadrao;
+
+            textoExibido = pergunta.Texto;
+            referenciaId = pergunta.Id;
+        }
 
         // Calcula o tempo decorrido desde o inicio da sessao
         var agora = DateTime.UtcNow;
@@ -132,8 +167,8 @@ public class SessaoService : ISessaoService
         {
             SessaoId = sessaoId,
             Tipo = TipoEvento.PerguntaClicada,
-            ReferenciaId = perguntaId,
-            TextoExibido = pergunta.Texto,
+            ReferenciaId = referenciaId,
+            TextoExibido = textoExibido,
             TextoResposta = textoResposta,
             OcorridoEm = agora,
             SegundosDesdeInicio = segundosDesdeInicio
@@ -151,7 +186,7 @@ public class SessaoService : ISessaoService
 
         return new RespostaInteracaoResponse(
             TipoEvento: TipoEvento.PerguntaClicada.ToString(),
-            TextoExibido: pergunta.Texto,
+            TextoExibido: textoExibido,
             TextoResposta: textoResposta,
             SegundosDesdeInicio: segundosDesdeInicio
         );

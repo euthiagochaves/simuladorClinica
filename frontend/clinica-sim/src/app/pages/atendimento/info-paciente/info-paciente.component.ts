@@ -11,4 +11,23 @@ import { Sessao } from '../../../core/models/sessao.model';
 })
 export class InfoPacienteComponent {
   @Input() sessao!: Sessao;
+  @Input() modoCegoTriagem = false;
+
+  get idadeExibicao(): string {
+    if (this.modoCegoTriagem) return '';
+    const idade = this.sessao.casoClinico?.idade;
+    return idade === undefined || idade === null ? '' : `${idade} años`;
+  }
+
+  get sexoExibicao(): string {
+    return this.modoCegoTriagem ? '' : `${this.sessao.casoClinico?.sexo ?? ''}`;
+  }
+
+  get motivoExibicao(): string {
+    return this.modoCegoTriagem ? '' : `${this.sessao.casoClinico?.queixaPrincipal ?? ''}`;
+  }
+
+  get triagemExibicao(): string {
+    return this.modoCegoTriagem ? '' : `${this.sessao.casoClinico?.triagem ?? ''}`;
+  }
 }

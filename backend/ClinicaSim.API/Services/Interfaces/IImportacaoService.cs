@@ -11,4 +11,7 @@ public interface IImportacaoService
     /// <param name="conteudoYaml">Texto YAML com a definicao do caso clinico.</param>
     /// <param name="usuarioId">Identificador do usuario que esta realizando a importacao (opcional).</param>
     Task<ResultadoImportacaoResponse> ImportarYamlAsync(string conteudoYaml, int? usuarioId);
+
+    /// <summary>Gera o template YAML completo para importacao de casos clinicos.</summary>
+    Task<string> GerarTemplateYamlAsync();
 }

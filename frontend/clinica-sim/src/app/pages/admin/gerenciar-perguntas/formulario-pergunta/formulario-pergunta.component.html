@@ -11,11 +11,21 @@
     </div>
     <div class="form-campo">
       <label>Sección *</label>
-      <input type="text" [value]="secao()" (input)="secao.set($any($event.target).value)" placeholder="ej: Anamnese, Exame Físico..." />
+      <select [value]="secao()" (change)="secao.set($any($event.target).value)">
+        <option value="">Seleccione una sección...</option>
+        @for (opcaoSecao of secoesDisponiveis(); track opcaoSecao) {
+          <option [value]="opcaoSecao">{{ opcaoSecao }}</option>
+        }
+      </select>
     </div>
     <div class="form-campo">
       <label>Categoría *</label>
-      <input type="text" [value]="categoria()" (input)="categoria.set($any($event.target).value)" placeholder="ej: dolor, fiebre, antecedentes..." />
+      <select [value]="categoria()" (change)="categoria.set($any($event.target).value)">
+        <option value="">Seleccione una categoría...</option>
+        @for (opcaoCategoria of categoriasDisponiveis(); track opcaoCategoria) {
+          <option [value]="opcaoCategoria">{{ opcaoCategoria }}</option>
+        }
+      </select>
     </div>
     <div class="form-campo">
       <label>Respuesta por Defecto *</label>

@@ -9,10 +9,13 @@ export class PerguntaService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = `${environment.apiUrl}/perguntas`;
 
-  listar(somenteAtivas?: boolean): Observable<Pergunta[]> {
+  listar(somenteAtivas?: boolean, casoClinicoId?: number): Observable<Pergunta[]> {
     let params = new HttpParams();
     if (somenteAtivas !== undefined) {
       params = params.set('apenasAtivas', String(somenteAtivas));
+    }
+    if (casoClinicoId !== undefined) {
+      params = params.set('casoClinicoId', String(casoClinicoId));
     }
     return this.http.get<Pergunta[]>(this.baseUrl, { params });
   }

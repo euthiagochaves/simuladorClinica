@@ -24,6 +24,8 @@ export class InicioComponent implements OnInit {
   carregando = signal(false);
   erro = signal<string | null>(null);
   iniciandoSessao = signal<number | null>(null);
+  iniciandoAleatorio = signal(false);
+  casoInfoAbertaId = signal<number | null>(null);
 
   ngOnInit(): void {
     this.carregarCasos();
@@ -54,6 +56,31 @@ export class InicioComponent implements OnInit {
       error: (err) => {
         this.iniciandoSessao.set(null);
         this.erro.set(err.mensagemAmigavel || 'Error al iniciar la atención.');
+      }
+    });
+  }
+
+  toggleInfoTriagem(casoId: number): void {
+    this.casoInfoAbertaId.update((atual) => atual === casoId ? null : casoId);
+  }
+
+  iniciarAtendimentoAleatorio(): void {
+    const ativos = this.casos();
+    if (ativos.length === 0) return;
+
+    const indice = Math.floor(Math.random() * ativos.length);
+    const caso = ativos[indice];
+
+    this.iniciandoAleatorio.set(true);
+    this.erro.set(null);
+    this.sessaoService.criar({ casoClinicoId: caso.id, alunoId: null }).subscribe({
+      next: (sessao) => {
+        this.iniciandoAleatorio.set(false);
+        this.router.navigate(['/atendimento', sessao.id], { queryParams: { modoCegoTriagem: 'true' } });
+      },
+      error: (err) => {
+        this.iniciandoAleatorio.set(false);
+        this.erro.set(err.mensagemAmigavel || 'Error al iniciar la atención aleatoria.');
       }
     });
   }

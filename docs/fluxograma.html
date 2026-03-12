@@ -189,7 +189,7 @@ flowchart TD
 <!-- FLUXO 4: MODELO DE DADOS -->
 <div class="section">
     <h2>4. Modelo de Dados (Relacionamentos) <span class="badge">DATABASE</span></h2>
-    <p class="desc">Relacionamento entre as 15 tabelas do PostgreSQL/Supabase.</p>
+    <p class="desc">Relacionamento entre as 16 tabelas atuais do PostgreSQL/Supabase.</p>
     <div class="mermaid">
 erDiagram
     USERS ||--o{ CLINICAL_CASES : cria
@@ -198,6 +198,7 @@ erDiagram
     USERS ||--o{ CASE_IMPORT_LOGS : importa
 
     CLINICAL_CASES ||--o{ CASE_QUESTION_ANSWERS : tem
+    CLINICAL_CASES ||--o{ CASE_SPECIFIC_QUESTIONS : possui
     CLINICAL_CASES ||--o{ CASE_PHYSICAL_FINDINGS : tem
     CLINICAL_CASES ||--o{ SESSIONS : atendido_em
     CLINICAL_CASES ||--o{ CASE_ATTACHMENTS : possui
@@ -215,6 +216,14 @@ erDiagram
         string Text
         string Category
         string DefaultAnswer
+    }
+
+    CASE_SPECIFIC_QUESTIONS {
+        int Id PK
+        int ClinicalCaseId FK
+        string Text
+        string Section
+        string Category
     }
 
     PHYSICAL_FINDING_BANK {
@@ -375,3 +384,5 @@ flowchart TD
 
 </body>
 </html>
+
+

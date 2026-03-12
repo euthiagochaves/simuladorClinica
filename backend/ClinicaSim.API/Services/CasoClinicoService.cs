@@ -3,6 +3,7 @@ using ClinicaSim.API.Data;
 using ClinicaSim.API.DTOs.CasosClinicos;
 using ClinicaSim.API.DTOs.RespostasCasos;
 using ClinicaSim.API.DTOs.AchadosFisicosCasos;
+using ClinicaSim.API.DTOs.PerguntasCasos;
 using ClinicaSim.API.Models.Entities;
 using ClinicaSim.API.Services.Interfaces;
 
@@ -126,21 +127,135 @@ public class CasoClinicoService : ICasoClinicoService
     /// <inheritdoc />
     public async Task<RespostaCasoResponse> AdicionarRespostaCasoAsync(int casoClinicoId, CriarRespostaCasoRequest request)
     {
-        var resposta = new RespostaCasoPergunta
-        {
-            CasoClinicoId = casoClinicoId,
-            PerguntaId = request.PerguntaId,
-            TextoResposta = request.TextoResposta,
-            Destacada = request.Destacada
-        };
+        var resposta = await _contexto.RespostasCasosPerguntas
+            .FirstOrDefaultAsync(r => r.CasoClinicoId == casoClinicoId && r.PerguntaId == request.PerguntaId);
 
-        _contexto.RespostasCasosPerguntas.Add(resposta);
+        if (resposta is null)
+        {
+            resposta = new RespostaCasoPergunta
+            {
+                CasoClinicoId = casoClinicoId,
+                PerguntaId = request.PerguntaId,
+                TextoResposta = request.TextoResposta,
+                Destacada = request.Destacada
+            };
+
+            _contexto.RespostasCasosPerguntas.Add(resposta);
+        }
+        else
+        {
+            resposta.TextoResposta = request.TextoResposta;
+            resposta.Destacada = request.Destacada;
+        }
+
         await _contexto.SaveChangesAsync();
 
         // Carrega a pergunta associada para incluir no response
         await _contexto.Entry(resposta).Reference(r => r.Pergunta).LoadAsync();
 
         return MapearRespostaParaResponse(resposta);
+    }
+
+    /// <inheritdoc />
+    public async Task<RespostaCasoResponse?> AtualizarRespostaCasoAsync(int casoClinicoId, int respostaId, AtualizarRespostaCasoRequest request)
+    {
+        var resposta = await _contexto.RespostasCasosPerguntas
+            .Include(r => r.Pergunta)
+            .FirstOrDefaultAsync(r => r.Id == respostaId && r.CasoClinicoId == casoClinicoId);
+
+        if (resposta is null)
+            return null;
+
+        resposta.TextoResposta = request.TextoResposta;
+        resposta.Destacada = request.Destacada;
+
+        await _contexto.SaveChangesAsync();
+
+        return MapearRespostaParaResponse(resposta);
+    }
+
+    /// <inheritdoc />
+    public async Task<bool> RemoverRespostaCasoAsync(int casoClinicoId, int respostaId)
+    {
+        var resposta = await _contexto.RespostasCasosPerguntas
+            .FirstOrDefaultAsync(r => r.Id == respostaId && r.CasoClinicoId == casoClinicoId);
+
+        if (resposta is null)
+            return false;
+
+        _contexto.RespostasCasosPerguntas.Remove(resposta);
+        await _contexto.SaveChangesAsync();
+
+        return true;
+    }
+
+    /// <inheritdoc />
+    public async Task<List<PerguntaCasoResponse>> ObterPerguntasCasosAsync(int casoClinicoId)
+    {
+        var perguntas = await _contexto.PerguntasCasos
+            .AsNoTracking()
+            .Where(p => p.CasoClinicoId == casoClinicoId)
+            .OrderBy(p => p.OrdemExibicao)
+            .ThenBy(p => p.Texto)
+            .ToListAsync();
+
+        return perguntas.Select(MapearPerguntaCasoParaResponse).ToList();
+    }
+
+    /// <inheritdoc />
+    public async Task<PerguntaCasoResponse> AdicionarPerguntaCasoAsync(int casoClinicoId, CriarPerguntaCasoRequest request)
+    {
+        var pergunta = new PerguntaCaso
+        {
+            CasoClinicoId = casoClinicoId,
+            Texto = request.Texto,
+            Secao = request.Secao,
+            Categoria = request.Categoria,
+            RespostaPadrao = request.RespostaPadrao,
+            OrdemExibicao = request.OrdemExibicao ?? 0,
+            Ativo = request.Ativo
+        };
+
+        _contexto.PerguntasCasos.Add(pergunta);
+        await _contexto.SaveChangesAsync();
+
+        return MapearPerguntaCasoParaResponse(pergunta);
+    }
+
+    /// <inheritdoc />
+    public async Task<PerguntaCasoResponse?> AtualizarPerguntaCasoAsync(int casoClinicoId, int perguntaCasoId, AtualizarPerguntaCasoRequest request)
+    {
+        var pergunta = await _contexto.PerguntasCasos
+            .FirstOrDefaultAsync(p => p.Id == perguntaCasoId && p.CasoClinicoId == casoClinicoId);
+
+        if (pergunta is null)
+            return null;
+
+        pergunta.Texto = request.Texto;
+        pergunta.Secao = request.Secao;
+        pergunta.Categoria = request.Categoria;
+        pergunta.RespostaPadrao = request.RespostaPadrao;
+        pergunta.OrdemExibicao = request.OrdemExibicao;
+        pergunta.Ativo = request.Ativo;
+
+        await _contexto.SaveChangesAsync();
+
+        return MapearPerguntaCasoParaResponse(pergunta);
+    }
+
+    /// <inheritdoc />
+    public async Task<bool> RemoverPerguntaCasoAsync(int casoClinicoId, int perguntaCasoId)
+    {
+        var pergunta = await _contexto.PerguntasCasos
+            .FirstOrDefaultAsync(p => p.Id == perguntaCasoId && p.CasoClinicoId == casoClinicoId);
+
+        if (pergunta is null)
+            return false;
+
+        _contexto.PerguntasCasos.Remove(pergunta);
+        await _contexto.SaveChangesAsync();
+
+        return true;
     }
 
     /// <inheritdoc />
@@ -175,6 +290,40 @@ public class CasoClinicoService : ICasoClinicoService
         await _contexto.Entry(achado).Reference(a => a.AchadoFisico).LoadAsync();
 
         return MapearAchadoCasoParaResponse(achado);
+    }
+
+    /// <inheritdoc />
+    public async Task<AchadoFisicoCasoResponse?> AtualizarAchadoFisicoCasoAsync(int casoClinicoId, int achadoCasoId, AtualizarAchadoFisicoCasoRequest request)
+    {
+        var achado = await _contexto.AchadosFisicosCasos
+            .Include(a => a.AchadoFisico)
+            .FirstOrDefaultAsync(a => a.Id == achadoCasoId && a.CasoClinicoId == casoClinicoId);
+
+        if (achado is null)
+            return null;
+
+        achado.Presente = request.Presente;
+        achado.TextoDetalhe = request.TextoDetalhe;
+        achado.Destacado = request.Destacado;
+
+        await _contexto.SaveChangesAsync();
+
+        return MapearAchadoCasoParaResponse(achado);
+    }
+
+    /// <inheritdoc />
+    public async Task<bool> RemoverAchadoFisicoCasoAsync(int casoClinicoId, int achadoCasoId)
+    {
+        var achado = await _contexto.AchadosFisicosCasos
+            .FirstOrDefaultAsync(a => a.Id == achadoCasoId && a.CasoClinicoId == casoClinicoId);
+
+        if (achado is null)
+            return false;
+
+        _contexto.AchadosFisicosCasos.Remove(achado);
+        await _contexto.SaveChangesAsync();
+
+        return true;
     }
 
     // =====================================================================
@@ -245,6 +394,23 @@ public class CasoClinicoService : ICasoClinicoService
             TextoDetalhe: achado.TextoDetalhe,
             Destacado: achado.Destacado,
             NomeAchado: achado.AchadoFisico?.Nome
+        );
+    }
+
+    /// <summary>
+    /// Mapeia uma entidade <see cref="PerguntaCaso"/> para o DTO <see cref="PerguntaCasoResponse"/>.
+    /// </summary>
+    private static PerguntaCasoResponse MapearPerguntaCasoParaResponse(PerguntaCaso pergunta)
+    {
+        return new PerguntaCasoResponse(
+            Id: pergunta.Id,
+            CasoClinicoId: pergunta.CasoClinicoId,
+            Texto: pergunta.Texto,
+            Secao: pergunta.Secao,
+            Categoria: pergunta.Categoria,
+            RespostaPadrao: pergunta.RespostaPadrao,
+            Ativo: pergunta.Ativo,
+            OrdemExibicao: pergunta.OrdemExibicao
         );
     }
 }

@@ -13,7 +13,9 @@
       <label>Sistema / Categoría *</label>
       <select [value]="sistemaCategoria()" (change)="sistemaCategoria.set($any($event.target).value)">
         <option value="">Seleccione un sistema...</option>
-        @for (s of sistemas; track s) { <option [value]="s">{{ s }}</option> }
+        @for (sistema of sistemasDisponiveis(); track sistema) {
+          <option [value]="sistema">{{ sistema }}</option>
+        }
       </select>
     </div>
     <div class="form-campo">

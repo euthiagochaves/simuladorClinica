@@ -25,6 +25,21 @@ public class ImportacaoController : ControllerBase
     }
 
     /// <summary>
+    /// Gera a plantilla YAML base para criacao de caso clinico.
+    /// Inclui instrucoes e opcoes atuais de secao/categoria.
+    /// </summary>
+    /// <returns>Arquivo YAML de template.</returns>
+    [HttpGet("yaml/template")]
+    [Produces("text/yaml")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> BaixarTemplateYaml()
+    {
+        var conteudo = await _importacaoService.GerarTemplateYamlAsync();
+        var bytes = System.Text.Encoding.UTF8.GetBytes(conteudo);
+        return File(bytes, "text/yaml", "plantilla-caso-clinico.yaml");
+    }
+
+    /// <summary>
     /// Importa um caso clinico a partir de conteudo YAML.
     /// Aceita tanto o envio de um arquivo YAML quanto texto bruto no corpo da requisicao.
     /// Quando um arquivo e enviado, o conteudo do arquivo tem prioridade sobre o texto bruto.

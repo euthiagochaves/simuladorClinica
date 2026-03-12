@@ -1,62 +1,425 @@
 <div class="formulario-page">
   <div class="formulario-page__header">
-    <h1 class="formulario-page__titulo">{{ modoEdicao ? 'Editar Caso Clínico' : 'Nuevo Caso Clínico' }}</h1>
-    <a routerLink="/admin/casos" class="btn btn--secondary">← Volver a Lista</a>
+    <h1 class="formulario-page__titulo">{{ modoEdicao ? 'Editar Caso Clinico' : 'Nuevo Caso Clinico' }}</h1>
+    <a routerLink="/admin/casos" class="btn btn--secondary"><- Volver a Lista</a>
   </div>
 
   @if (erro()) {
     <div class="alerta alerta--erro">{{ erro() }}</div>
   }
 
-  <div class="formulario-page__corpo">
-    <div class="form-campo">
-      <label>Título *</label>
-      <input type="text" [value]="titulo()" (input)="titulo.set($any($event.target).value)" placeholder="Título del caso" />
-    </div>
-    <div class="form-campo">
-      <label>Nombre del Paciente *</label>
-      <input type="text" [value]="nomePaciente()" (input)="nomePaciente.set($any($event.target).value)" placeholder="Nombre completo" />
-    </div>
-    <div class="form-campo">
-      <label>Edad *</label>
-      <input type="number" [value]="idade()" (input)="idade.set(+$any($event.target).value)" min="0" max="120" />
-    </div>
-    <div class="form-campo">
-      <label>Sexo *</label>
-      <select [value]="sexo()" (change)="sexo.set($any($event.target).value)">
-        <option value="">Seleccione...</option>
-        <option value="Masculino">Masculino</option>
-        <option value="Femenino">Femenino</option>
-        <option value="Otro">Otro</option>
-      </select>
-    </div>
-    <div class="form-campo">
-      <label>Motivo de Consulta *</label>
-      <input type="text" [value]="queixaPrincipal()" (input)="queixaPrincipal.set($any($event.target).value)" placeholder="Queja principal" />
-    </div>
-    <div class="form-campo">
-      <label>Triaje *</label>
-      <select [value]="triagem()" (change)="triagem.set($any($event.target).value)">
-        <option value="">Seleccione...</option>
-        <option value="Urgente">Urgente</option>
-        <option value="Prioritario">Prioritario</option>
-        <option value="Normal">Normal</option>
-      </select>
-    </div>
-    <div class="form-campo">
-      <label>Resumen</label>
-      <textarea rows="4" [value]="resumo()" (input)="resumo.set($any($event.target).value)" placeholder="Resumen del caso clínico..."></textarea>
-    </div>
-    <div class="form-campo form-campo--checkbox">
-      <input type="checkbox" id="ativo" [checked]="ativo()" (change)="ativo.set($any($event.target).checked)" />
-      <label for="ativo">Caso activo</label>
-    </div>
+  @if (sucesso()) {
+    <div class="alerta alerta--sucesso">{{ sucesso() }}</div>
+  }
 
-    <div class="form-acoes">
-      <button class="btn btn--primary" (click)="salvar()" [disabled]="salvando()">
-        {{ salvando() ? 'Guardando...' : 'Guardar' }}
-      </button>
-      <a routerLink="/admin/casos" class="btn btn--secondary">Cancelar</a>
-    </div>
+  <div class="formulario-page__corpo">
+    @if (carregando()) {
+      <p>Cargando datos del caso...</p>
+    } @else {
+      <div class="tabs">
+        <button class="tab-btn" [class.tab-btn--active]="abaAtiva() === 'triagem'" (click)="selecionarAba('triagem')">
+          Triaje
+        </button>
+        <button class="tab-btn" [class.tab-btn--active]="abaAtiva() === 'anamnesis'" (click)="selecionarAba('anamnesis')">
+          Anamnesis
+        </button>
+        <button class="tab-btn" [class.tab-btn--active]="abaAtiva() === 'exame-fisico'" (click)="selecionarAba('exame-fisico')">
+          Examen Fisico
+        </button>
+      </div>
+
+      @if (abaAtiva() === 'triagem') {
+        <section class="aba-conteudo">
+          <div class="form-campo">
+            <label>Titulo *</label>
+            <input type="text" [value]="titulo()" (input)="titulo.set($any($event.target).value)" placeholder="Titulo del caso" />
+          </div>
+          <div class="form-campo">
+            <label>Nombre del Paciente *</label>
+            <input type="text" [value]="nomePaciente()" (input)="nomePaciente.set($any($event.target).value)" placeholder="Nombre completo" />
+          </div>
+          <div class="form-campo">
+            <label>Edad *</label>
+            <input type="number" [value]="idade()" (input)="idade.set(+$any($event.target).value)" min="0" max="120" />
+          </div>
+          <div class="form-campo">
+            <label>Sexo *</label>
+            <select [value]="sexo()" (change)="sexo.set($any($event.target).value)">
+              <option value="">Seleccione...</option>
+              <option value="Masculino">Masculino</option>
+              <option value="Femenino">Femenino</option>
+              <option value="Otro">Otro</option>
+            </select>
+          </div>
+          <div class="form-campo">
+            <label>Motivo de Consulta *</label>
+            <input type="text" [value]="queixaPrincipal()" (input)="queixaPrincipal.set($any($event.target).value)" placeholder="Motivo principal" />
+          </div>
+          <div class="form-campo">
+            <label>Triaje</label>
+            <select [value]="triagem()" (change)="triagem.set($any($event.target).value)">
+              <option value="">Seleccione...</option>
+              <option value="Urgente">Urgente</option>
+              <option value="Prioritario">Prioritario</option>
+              <option value="Normal">Normal</option>
+            </select>
+          </div>
+          <div class="form-campo">
+            <label>Resumen</label>
+            <textarea rows="4" [value]="resumo()" (input)="resumo.set($any($event.target).value)" placeholder="Resumen del caso clinico..."></textarea>
+          </div>
+          <div class="form-campo form-campo--checkbox">
+            <input type="checkbox" id="ativo" [checked]="ativo()" (change)="ativo.set($any($event.target).checked)" />
+            <label for="ativo">Caso activo</label>
+          </div>
+
+          <div class="form-acoes">
+            <button class="btn btn--primary" type="button" (click)="salvarTriagem()" [disabled]="salvando()">
+              {{ salvando() ? 'Guardando...' : 'Guardar Triaje' }}
+            </button>
+          </div>
+        </section>
+      }
+
+      @if (abaAtiva() === 'anamnesis') {
+        <section class="aba-conteudo">
+          <section class="acordeao">
+            <button type="button" class="acordeao__toggle" (click)="toggleAcordeaoPerguntasCaso()">
+              <span>Preguntas del Caso</span>
+              <span>{{ acordeaoPerguntasCasoAberto() ? '-' : '+' }}</span>
+            </button>
+
+            @if (acordeaoPerguntasCasoAberto()) {
+              <div class="acordeao__conteudo">
+                <div class="subseccion__form-grid">
+                  <div class="form-campo">
+                    <label>Texto *</label>
+                    <input type="text" [value]="novaPerguntaCasoTexto()" (input)="novaPerguntaCasoTexto.set($any($event.target).value)" placeholder="Texto de la pregunta" />
+                  </div>
+                  <div class="form-campo">
+                    <label>Seccion *</label>
+                    <select [value]="novaPerguntaCasoSecao()" (change)="novaPerguntaCasoSecao.set($any($event.target).value)">
+                      <option value="">Seleccione...</option>
+                      @for (secao of secoesParaPerguntaCaso(); track secao) {
+                        <option [value]="secao">{{ secao }}</option>
+                      }
+                    </select>
+                  </div>
+                  <div class="form-campo">
+                    <label>Categoria *</label>
+                    <select [value]="novaPerguntaCasoCategoria()" (change)="novaPerguntaCasoCategoria.set($any($event.target).value)">
+                      <option value="">Seleccione...</option>
+                      @for (categoria of categoriasParaPerguntaCaso(); track categoria) {
+                        <option [value]="categoria">{{ categoria }}</option>
+                      }
+                    </select>
+                  </div>
+                  <div class="form-campo">
+                    <label>Respuesta predeterminada *</label>
+                    <input type="text" [value]="novaPerguntaCasoRespostaPadrao()" (input)="novaPerguntaCasoRespostaPadrao.set($any($event.target).value)" placeholder="Respuesta por defecto de la pregunta del caso" />
+                  </div>
+                  <div class="form-campo">
+                    <label>Orden</label>
+                    <input type="number" [value]="novaPerguntaCasoOrdem()" (input)="novaPerguntaCasoOrdem.set(+$any($event.target).value)" />
+                  </div>
+                  <div class="form-campo form-campo--checkbox">
+                    <input type="checkbox" id="novaPerguntaCasoAtiva" [checked]="novaPerguntaCasoAtiva()" (change)="novaPerguntaCasoAtiva.set($any($event.target).checked)" />
+                    <label for="novaPerguntaCasoAtiva">Activa</label>
+                  </div>
+                  <div class="form-campo">
+                    <button class="btn btn--secondary" type="button" (click)="adicionarPerguntaCaso()">Agregar pregunta del caso</button>
+                  </div>
+                </div>
+
+                <div class="tabla-wrapper">
+                  <table class="tabla">
+                    <thead>
+                      <tr>
+                        <th>Texto</th>
+                        <th>Seccion</th>
+                        <th>Categoria</th>
+                        <th>Respuesta predeterminada</th>
+                        <th>Orden</th>
+                        <th>Activa</th>
+                        <th>Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @for (pergunta of perguntasCaso(); track pergunta.localId) {
+                        <tr>
+                          <td><input type="text" [value]="pergunta.texto" (input)="pergunta.texto = $any($event.target).value" /></td>
+                          <td>
+                            <select [value]="pergunta.secao" (change)="pergunta.secao = $any($event.target).value">
+                              @for (secao of secoesParaPerguntaCaso(); track secao) {
+                                <option [value]="secao">{{ secao }}</option>
+                              }
+                            </select>
+                          </td>
+                          <td>
+                            <select [value]="pergunta.categoria" (change)="pergunta.categoria = $any($event.target).value">
+                              @for (categoria of categoriasParaPerguntaCaso(); track categoria) {
+                                <option [value]="categoria">{{ categoria }}</option>
+                              }
+                            </select>
+                          </td>
+                          <td><input type="text" [value]="pergunta.respostaPadrao" (input)="pergunta.respostaPadrao = $any($event.target).value" /></td>
+                          <td><input type="number" [value]="pergunta.ordemExibicao" (input)="pergunta.ordemExibicao = +$any($event.target).value" /></td>
+                          <td><input type="checkbox" [checked]="pergunta.ativo" (change)="pergunta.ativo = $any($event.target).checked" /></td>
+                          <td><button class="btn-icon" type="button" (click)="removerPerguntaCaso(pergunta.localId)">X</button></td>
+                        </tr>
+                      }
+                      @empty {
+                        <tr>
+                          <td colspan="7" class="tabla__vazio">No hay preguntas especificas para este caso.</td>
+                        </tr>
+                      }
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            }
+          </section>
+
+          <section class="acordeao">
+            <button type="button" class="acordeao__toggle" (click)="toggleAcordeaoPerguntasGlobais()">
+              <span>Preguntas Globales</span>
+              <span>{{ acordeaoPerguntasGlobaisAberto() ? '-' : '+' }}</span>
+            </button>
+
+            @if (acordeaoPerguntasGlobaisAberto()) {
+              <div class="acordeao__conteudo">
+                <div class="subseccion__form-grid subseccion__form-grid--compacta">
+                  <div class="form-campo">
+                    <label>Filtrar por Seccion</label>
+                    <select [value]="filtroSecaoPerguntasGlobais()" (change)="filtroSecaoPerguntasGlobais.set($any($event.target).value)">
+                      @for (secao of secoesGlobais(); track secao) {
+                        <option [value]="secao">{{ secao }}</option>
+                      }
+                    </select>
+                  </div>
+                </div>
+
+                <div class="tabla-wrapper">
+                  <table class="tabla">
+                    <thead>
+                      <tr>
+                        <th>Pregunta</th>
+                        <th>Seccion</th>
+                        <th>Respuesta del caso</th>
+                        <th>Destacada</th>
+                        <th>Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @for (resposta of respostasGlobaisFiltradas(); track resposta.perguntaId) {
+                        <tr>
+                          <td>{{ resposta.textoPergunta }}</td>
+                          <td>{{ obterSecaoPerguntaGlobal(resposta.perguntaId) }}</td>
+                          <td>
+                            <input type="text" [value]="resposta.textoResposta" (input)="atualizarRespostaGlobal(resposta.perguntaId, $any($event.target).value)" />
+                          </td>
+                          <td>
+                            <input type="checkbox" [checked]="resposta.destacada" (change)="atualizarDestacadaGlobal(resposta.perguntaId, $any($event.target).checked)" />
+                          </td>
+                          <td class="acoes-linha">
+                            <button class="btn btn--secondary" type="button" (click)="resetarRespostaGlobalParaPadrao(resposta.perguntaId)">Reset</button>
+                          </td>
+                        </tr>
+                      }
+                      @empty {
+                        <tr>
+                          <td colspan="5" class="tabla__vazio">No hay preguntas globales para la seccion seleccionada.</td>
+                        </tr>
+                      }
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            }
+          </section>
+
+          <div class="form-acoes">
+            <button class="btn btn--primary" type="button" (click)="salvarAnamnesis()" [disabled]="salvando()">
+              {{ salvando() ? 'Guardando...' : 'Guardar Anamnesis' }}
+            </button>
+          </div>
+        </section>
+      }
+
+      @if (abaAtiva() === 'exame-fisico') {
+        <section class="aba-conteudo">
+          <section class="acordeao">
+            <button type="button" class="acordeao__toggle" (click)="toggleAcordeaoAchadosCaso()">
+              <span>Hallazgos del Caso</span>
+              <span>{{ acordeaoAchadosCasoAberto() ? '-' : '+' }}</span>
+            </button>
+
+            @if (acordeaoAchadosCasoAberto()) {
+              <div class="acordeao__conteudo">
+                <div class="subseccion__form-grid">
+                  <div class="form-campo">
+                    <label>Hallazgo base</label>
+                    <select [value]="novoAchadoCasoId() ?? ''" (change)="novoAchadoCasoId.set(+$any($event.target).value || null); selecionarNovoAchadoCaso()">
+                      <option value="">Seleccione...</option>
+                      @for (achado of achadosGlobaisDisponiveis(); track achado.id) {
+                        <option [value]="achado.id">{{ achado.nome }} ({{ achado.sistemaCategoria }})</option>
+                      }
+                    </select>
+                  </div>
+                  <div class="form-campo">
+                    <label>Respuesta especifica del caso</label>
+                    <input type="text" [value]="novoAchadoCasoTextoDetalhe()" (input)="novoAchadoCasoTextoDetalhe.set($any($event.target).value)" placeholder="Detalle del hallazgo para este caso" />
+                  </div>
+                  <div class="form-campo form-campo--checkbox">
+                    <input type="checkbox" id="novoAchadoPresente" [checked]="novoAchadoCasoPresente()" (change)="novoAchadoCasoPresente.set($any($event.target).checked)" />
+                    <label for="novoAchadoPresente">Presente</label>
+                  </div>
+                  <div class="form-campo form-campo--checkbox">
+                    <input type="checkbox" id="novoAchadoDestacado" [checked]="novoAchadoCasoDestacado()" (change)="novoAchadoCasoDestacado.set($any($event.target).checked)" />
+                    <label for="novoAchadoDestacado">Destacado</label>
+                  </div>
+                  <div class="form-campo">
+                    <button class="btn btn--secondary" type="button" (click)="adicionarAchadoCaso()">Agregar hallazgo del caso</button>
+                  </div>
+                </div>
+
+                <div class="subseccion__form-grid subseccion__form-grid--compacta">
+                  <div class="form-campo">
+                    <label>Filtrar por Sistema</label>
+                    <select [value]="filtroSistemaAchadosCaso()" (change)="filtroSistemaAchadosCaso.set($any($event.target).value)">
+                      @for (sistema of sistemasAchados(); track sistema) {
+                        <option [value]="sistema">{{ sistema }}</option>
+                      }
+                    </select>
+                  </div>
+                </div>
+
+                <div class="tabla-wrapper">
+                  <table class="tabla">
+                    <thead>
+                      <tr>
+                        <th>Hallazgo</th>
+                        <th>Sistema</th>
+                        <th>Respuesta del caso</th>
+                        <th>Presente</th>
+                        <th>Destacado</th>
+                        <th>Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @for (achado of achadosCasoFiltrados(); track achado.localId) {
+                        <tr>
+                          <td>{{ achado.nomeAchado }}</td>
+                          <td>{{ achado.sistemaCategoria }}</td>
+                          <td><input type="text" [value]="achado.textoDetalhe" (input)="atualizarTextoAchadoCaso(achado.localId, $any($event.target).value)" /></td>
+                          <td><input type="checkbox" [checked]="achado.presente" (change)="achado.presente = $any($event.target).checked" /></td>
+                          <td><input type="checkbox" [checked]="achado.destacado" (change)="achado.destacado = $any($event.target).checked" /></td>
+                          <td class="acoes-linha">
+                            <button class="btn btn--secondary" type="button" (click)="resetarAchadoParaPadrao(achado.localId)">Reset</button>
+                            <button class="btn-icon" type="button" (click)="removerAchadoCaso(achado.localId)">X</button>
+                          </td>
+                        </tr>
+                      }
+                      @empty {
+                        <tr>
+                          <td colspan="6" class="tabla__vazio">No hay hallazgos del caso para el sistema seleccionado.</td>
+                        </tr>
+                      }
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            }
+          </section>
+
+          <section class="acordeao">
+            <button type="button" class="acordeao__toggle" (click)="toggleAcordeaoAchadosGlobais()">
+              <span>Hallazgos Globales</span>
+              <span>{{ acordeaoAchadosGlobaisAberto() ? '-' : '+' }}</span>
+            </button>
+
+            @if (acordeaoAchadosGlobaisAberto()) {
+              <div class="acordeao__conteudo">
+                <div class="subseccion__form-grid subseccion__form-grid--compacta">
+                  <div class="form-campo">
+                    <label>Filtrar por Sistema</label>
+                    <select [value]="filtroSistemaAchadosGlobais()" (change)="filtroSistemaAchadosGlobais.set($any($event.target).value)">
+                      @for (sistema of sistemasAchados(); track sistema) {
+                        <option [value]="sistema">{{ sistema }}</option>
+                      }
+                    </select>
+                  </div>
+                </div>
+
+                <div class="tabla-wrapper">
+                  <table class="tabla">
+                    <thead>
+                      <tr>
+                        <th>Hallazgo Global</th>
+                        <th>Sistema</th>
+                        <th>Resultado Predeterminado</th>
+                        <th>Respuesta especifica del caso</th>
+                        <th>Presente</th>
+                        <th>Destacado</th>
+                        <th>Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @for (achado of achadosGlobaisFiltrados(); track achado.id) {
+                        @let achadoCaso = obterAchadoCasoPorAchadoGlobal(achado.id);
+                        <tr>
+                          <td>{{ achado.nome }}</td>
+                          <td>{{ achado.sistemaCategoria }}</td>
+                          <td>{{ achado.resultadoPadrao }}</td>
+                          <td>
+                            @if (achadoCaso) {
+                              <input type="text" [value]="achadoCaso.textoDetalhe" (input)="atualizarTextoAchadoCaso(achadoCaso.localId, $any($event.target).value)" />
+                            } @else {
+                              <span class="texto-muted">No seleccionado</span>
+                            }
+                          </td>
+                          <td>
+                            @if (achadoCaso) {
+                              <input type="checkbox" [checked]="achadoCaso.presente" (change)="achadoCaso.presente = $any($event.target).checked" />
+                            } @else {
+                              <span class="texto-muted">-</span>
+                            }
+                          </td>
+                          <td>
+                            @if (achadoCaso) {
+                              <input type="checkbox" [checked]="achadoCaso.destacado" (change)="achadoCaso.destacado = $any($event.target).checked" />
+                            } @else {
+                              <span class="texto-muted">-</span>
+                            }
+                          </td>
+                          <td class="acoes-linha">
+                            @if (achadoCaso) {
+                              <button class="btn btn--secondary" type="button" (click)="resetarAchadoParaPadrao(achadoCaso.localId)">Reset</button>
+                            } @else {
+                              <button class="btn btn--secondary" type="button" (click)="usarAchadoGlobalNoCaso(achado)">Usar en el caso</button>
+                            }
+                          </td>
+                        </tr>
+                      }
+                      @empty {
+                        <tr>
+                          <td colspan="7" class="tabla__vazio">No hay hallazgos globales para el sistema seleccionado.</td>
+                        </tr>
+                      }
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            }
+          </section>
+
+          <div class="form-acoes">
+            <button class="btn btn--primary" type="button" (click)="salvarExameFisico()" [disabled]="salvando()">
+              {{ salvando() ? 'Guardando...' : 'Guardar Examen Fisico' }}
+            </button>
+          </div>
+        </section>
+      }
+    }
   </div>
 </div>

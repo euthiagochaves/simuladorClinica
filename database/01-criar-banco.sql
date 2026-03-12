@@ -1,54 +1,3 @@
--- ============================================================================
--- ClinicaSim — Script de criação do banco de dados (PostgreSQL / Supabase)
--- ============================================================================
--- Executar este script no SQL Editor do Supabase (https://supabase.com/dashboard)
--- Ou via psql: psql -h HOST -U postgres -d postgres -f 01-criar-banco.sql
--- ============================================================================
-
--- Limpar tabelas existentes (caso queira recriar do zero)
--- CUIDADO: isto apaga TODOS os dados!
--- DROP SCHEMA public CASCADE;
--- CREATE SCHEMA public;
-
--- ============================================================================
--- 1. TABELA: usuarios
--- ============================================================================
-CREATE TABLE IF NOT EXISTS usuarios (
-    id                  SERIAL PRIMARY KEY,
-    nome_completo       VARCHAR(200)    NOT NULL,
-    email               VARCHAR(200)    NOT NULL,
-    senha_hash          VARCHAR(500),
-    perfil              VARCHAR(20)     NOT NULL DEFAULT 'Aluno',
-    ativo               BOOLEAN         NOT NULL DEFAULT TRUE,
-    criado_em           TIMESTAMPTZ     NOT NULL DEFAULT NOW(),
-    atualizado_em       TIMESTAMPTZ     NOT NULL DEFAULT NOW(),
-
-    CONSTRAINT chk_perfil CHECK (perfil IN ('Aluno', 'Professor', 'Administrador'))
-);
-
-CREATE UNIQUE INDEX IF NOT EXISTS ix_usuarios_email ON usuarios (email);
-
--- ============================================================================
--- 2. TABELA: casos_clinicos
--- ============================================================================
-CREATE TABLE IF NOT EXISTS casos_clinicos (
-    id                      SERIAL PRIMARY KEY,
-    titulo                  VARCHAR(300)    NOT NULL,
-    nome_paciente           VARCHAR(200)    NOT NULL,
-    idade                   INTEGER         NOT NULL,
-    sexo                    VARCHAR(20)     NOT NULL,
-    queixa_principal        TEXT            NOT NULL,
-    triagem                 VARCHAR(30),
-    resumo                  TEXT,
-    ativo                   BOOLEAN         NOT NULL DEFAULT TRUE,
-    criado_por_usuario_id   INTEGER         REFERENCES usuarios(id) ON DELETE SET NULL,
-    criado_em               TIMESTAMPTZ     NOT NULL DEFAULT NOW(),
-    atualizado_em           TIMESTAMPTZ     NOT NULL DEFAULT NOW()
-);
-
--- ============================================================================
--- 3. TABELA: perguntas (banco global de anamnese)
--- ============================================================================
 CREATE TABLE IF NOT EXISTS perguntas (
     id                  SERIAL PRIMARY KEY,
     texto               TEXT            NOT NULL,
@@ -61,197 +10,238 @@ CREATE TABLE IF NOT EXISTS perguntas (
     atualizado_em       TIMESTAMPTZ     NOT NULL DEFAULT NOW()
 );
 
--- ============================================================================
--- 4. TABELA: respostas_casos_perguntas (sobrescrita caso → pergunta global)
--- ============================================================================
-CREATE TABLE IF NOT EXISTS respostas_casos_perguntas (
-    id                  SERIAL PRIMARY KEY,
-    caso_clinico_id     INTEGER         NOT NULL REFERENCES casos_clinicos(id) ON DELETE CASCADE,
-    pergunta_id         INTEGER         NOT NULL REFERENCES perguntas(id) ON DELETE CASCADE,
-    texto_resposta      TEXT            NOT NULL,
-    destacada           BOOLEAN         NOT NULL DEFAULT FALSE,
-    criado_em           TIMESTAMPTZ     NOT NULL DEFAULT NOW(),
-    atualizado_em       TIMESTAMPTZ     NOT NULL DEFAULT NOW()
-);
+INSERT INTO perguntas (texto, secao, categoria, resposta_padrao, ordem_exibicao) VALUES
 
--- Cada caso só pode ter UMA resposta por pergunta
-CREATE UNIQUE INDEX IF NOT EXISTS ix_respostas_casos_perguntas_caso_pergunta
-    ON respostas_casos_perguntas (caso_clinico_id, pergunta_id);
+-- =========================
+-- IDENTIFICACIÓN
+-- =========================
+('¿Cómo te llamás?','Anamnesis','Identificación','Me llamo Juan.',1),
+('¿Cuántos años tenés?','Anamnesis','Identificación','Tengo 30 años.',2),
+('¿En qué ciudad vivís?','Anamnesis','Identificación','Vivo en Buenos Aires.',3),
+('¿A qué te dedicás o en qué trabajás?','Anamnesis','Identificación','Trabajo en una oficina.',4),
+('¿Con quién vivís actualmente?','Anamnesis','Identificación','Vivo con mi pareja.',5),
 
--- ============================================================================
--- 5. TABELA: achados_fisicos (banco global de exame físico)
--- ============================================================================
-CREATE TABLE IF NOT EXISTS achados_fisicos (
-    id                  SERIAL PRIMARY KEY,
-    nome                VARCHAR(200)    NOT NULL,
-    sistema_categoria   VARCHAR(100)    NOT NULL,
-    descricao           TEXT,
-    resultado_padrao    TEXT            NOT NULL,
-    ativo               BOOLEAN         NOT NULL DEFAULT TRUE,
-    criado_em           TIMESTAMPTZ     NOT NULL DEFAULT NOW(),
-    atualizado_em       TIMESTAMPTZ     NOT NULL DEFAULT NOW()
-);
+-- =========================
+-- MOTIVO DE CONSULTA
+-- =========================
+('¿Qué te trae hoy a la consulta?','Anamnesis','Motivo consulta','Vine para un control general.',6),
+('¿Desde cuándo te sentís así?','Anamnesis','Motivo consulta','Me siento bien.',7),
+('¿Tenés alguna molestia ahora?','Anamnesis','Motivo consulta','No.',8),
+('¿Esto ya te pasó antes?','Anamnesis','Motivo consulta','No.',9),
+('¿Algo te preocupa sobre tu salud?','Anamnesis','Motivo consulta','No.',10),
 
--- ============================================================================
--- 6. TABELA: achados_fisicos_casos (sobrescrita caso → achado global)
--- ============================================================================
-CREATE TABLE IF NOT EXISTS achados_fisicos_casos (
-    id                  SERIAL PRIMARY KEY,
-    caso_clinico_id     INTEGER         NOT NULL REFERENCES casos_clinicos(id) ON DELETE CASCADE,
-    achado_fisico_id    INTEGER         NOT NULL REFERENCES achados_fisicos(id) ON DELETE CASCADE,
-    presente            BOOLEAN         NOT NULL DEFAULT TRUE,
-    texto_detalhe       TEXT,
-    destacado           BOOLEAN         NOT NULL DEFAULT FALSE,
-    criado_em           TIMESTAMPTZ     NOT NULL DEFAULT NOW(),
-    atualizado_em       TIMESTAMPTZ     NOT NULL DEFAULT NOW()
-);
+-- =========================
+-- HISTORIA ACTUAL
+-- =========================
+('¿Notaste algún cambio reciente en tu salud?','Anamnesis','Historia actual','No.',11),
+('¿Te hiciste algún control médico recientemente?','Anamnesis','Historia actual','Sí, hace un año.',12),
+('¿Alguna vez tuviste síntomas parecidos a algo que te preocupe?','Anamnesis','Historia actual','No.',13),
 
--- Cada caso só pode ter UM achado por achado físico global
-CREATE UNIQUE INDEX IF NOT EXISTS ix_achados_fisicos_casos_caso_achado
-    ON achados_fisicos_casos (caso_clinico_id, achado_fisico_id);
+-- =========================
+-- DOLOR
+-- =========================
+('¿Sentís dolor en alguna parte del cuerpo?','Anamnesis','Dolor','No.',14),
+('¿Dónde te duele exactamente?','Anamnesis','Dolor','No tengo dolor.',15),
+('¿Cómo describirías el dolor?','Anamnesis','Dolor','No tengo dolor.',16),
+('¿Desde cuándo te duele?','Anamnesis','Dolor','No tengo dolor.',17),
+('¿El dolor se mueve hacia otra parte del cuerpo?','Anamnesis','Dolor','No.',18),
+('¿El dolor aparece con esfuerzo?','Anamnesis','Dolor','No.',19),
 
--- ============================================================================
--- 7. TABELA: sessoes (atendimentos dos alunos)
--- ============================================================================
-CREATE TABLE IF NOT EXISTS sessoes (
-    id                  SERIAL PRIMARY KEY,
-    caso_clinico_id     INTEGER         NOT NULL REFERENCES casos_clinicos(id) ON DELETE RESTRICT,
-    aluno_id            INTEGER         REFERENCES usuarios(id) ON DELETE SET NULL,
-    codigo_sessao       VARCHAR(20)     NOT NULL,
-    iniciado_em         TIMESTAMPTZ     NOT NULL DEFAULT NOW(),
-    finalizado_em       TIMESTAMPTZ,
-    status              VARCHAR(20)     NOT NULL DEFAULT 'Iniciada',
-    criado_em           TIMESTAMPTZ     NOT NULL DEFAULT NOW(),
-    atualizado_em       TIMESTAMPTZ     NOT NULL DEFAULT NOW(),
+-- =========================
+-- ANTECEDENTES PERSONALES
+-- =========================
+('¿Tenés alguna enfermedad diagnosticada?','Anamnesis','Antecedentes personales','No.',20),
+('¿Alguna vez te dijeron que tenés presión alta?','Anamnesis','Antecedentes personales','No.',21),
+('¿Alguna vez te dijeron que tenés diabetes?','Anamnesis','Antecedentes personales','No.',22),
+('¿Alguna vez te operaron?','Anamnesis','Antecedentes personales','No.',23),
+('¿Alguna vez estuviste internado?','Anamnesis','Antecedentes personales','No.',24),
+('¿Tuviste alguna fractura?','Anamnesis','Antecedentes personales','No.',25),
+('¿Tuviste accidentes importantes?','Anamnesis','Antecedentes personales','No.',26),
 
-    CONSTRAINT chk_status_sessao CHECK (status IN ('Iniciada', 'EmAndamento', 'Finalizada'))
-);
+-- =========================
+-- MEDICACIÓN
+-- =========================
+('¿Tomás algún medicamento?','Anamnesis','Medicación','No.',27),
+('¿Tomás vitaminas o suplementos?','Anamnesis','Medicación','A veces.',28),
+('¿Tomás medicamentos sin receta?','Anamnesis','Medicación','No.',29),
 
-CREATE UNIQUE INDEX IF NOT EXISTS ix_sessoes_codigo ON sessoes (codigo_sessao);
+-- =========================
+-- ALERGIAS
+-- =========================
+('¿Sos alérgico a algún medicamento?','Anamnesis','Alergias','No.',30),
+('¿Tenés alergia a alimentos?','Anamnesis','Alergias','No.',31),
+('¿Tenés alergia ambiental (polvo, polen)?','Anamnesis','Alergias','No.',32),
 
--- ============================================================================
--- 8. TABELA: eventos_sessoes (interações durante a sessão)
--- ============================================================================
-CREATE TABLE IF NOT EXISTS eventos_sessoes (
-    id                      SERIAL PRIMARY KEY,
-    sessao_id               INTEGER         NOT NULL REFERENCES sessoes(id) ON DELETE CASCADE,
-    tipo                    VARCHAR(30)     NOT NULL,
-    referencia_id           INTEGER         NOT NULL,
-    texto_exibido           TEXT            NOT NULL,
-    texto_resposta          TEXT            NOT NULL,
-    ocorrido_em             TIMESTAMPTZ     NOT NULL DEFAULT NOW(),
-    segundos_desde_inicio   INTEGER         NOT NULL DEFAULT 0,
+-- =========================
+-- ANTECEDENTES FAMILIARES
+-- =========================
+('¿Algún familiar tiene diabetes?','Anamnesis','Antecedentes familiares','No.',33),
+('¿Algún familiar tiene presión alta?','Anamnesis','Antecedentes familiares','No.',34),
+('¿Algún familiar tuvo infarto?','Anamnesis','Antecedentes familiares','No.',35),
+('¿Algún familiar tuvo ACV?','Anamnesis','Antecedentes familiares','No.',36),
+('¿Algún familiar tuvo cáncer?','Anamnesis','Antecedentes familiares','No.',37),
 
-    CONSTRAINT chk_tipo_evento CHECK (tipo IN ('PerguntaClicada', 'AchadoSelecionado'))
-);
+-- =========================
+-- HÁBITOS
+-- =========================
+('¿Fumás?','Anamnesis','Hábitos','No.',38),
+('¿Fumaste alguna vez?','Anamnesis','Hábitos','No.',39),
+('¿Tomás alcohol?','Anamnesis','Hábitos','Solo ocasionalmente.',40),
+('¿Consumís drogas recreativas?','Anamnesis','Hábitos','No.',41),
+('¿Hacés actividad física?','Anamnesis','Hábitos','Sí.',42),
+('¿Cuántas veces por semana hacés ejercicio?','Anamnesis','Hábitos','Tres veces por semana.',43),
+('¿Qué tipo de ejercicio hacés?','Anamnesis','Hábitos','Caminar o gimnasio.',44),
 
--- ============================================================================
--- 9. TABELA: notas_clinicas (história clínica — 1:1 com sessão)
--- ============================================================================
-CREATE TABLE IF NOT EXISTS notas_clinicas (
-    id                              SERIAL PRIMARY KEY,
-    sessao_id                       INTEGER     NOT NULL REFERENCES sessoes(id) ON DELETE CASCADE,
-    texto_resumo                    TEXT        NOT NULL,
-    texto_diagnostico_provavel      TEXT        NOT NULL,
-    texto_conduta                   TEXT        NOT NULL,
-    criado_em                       TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    atualizado_em                   TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
+-- =========================
+-- SUEÑO
+-- =========================
+('¿Dormís bien?','Anamnesis','Sueño','Sí.',45),
+('¿Cuántas horas dormís por noche?','Anamnesis','Sueño','Unas 7 horas.',46),
+('¿Te despertás durante la noche?','Anamnesis','Sueño','No.',47),
+('¿Roncás al dormir?','Anamnesis','Sueño','No que yo sepa.',48),
+('¿Te sentís descansado al levantarte?','Anamnesis','Sueño','Sí.',49),
 
--- Garantir relação 1:1 com sessão
-CREATE UNIQUE INDEX IF NOT EXISTS ix_notas_clinicas_sessao ON notas_clinicas (sessao_id);
+-- =========================
+-- SÍNTOMAS GENERALES
+-- =========================
+('¿Tuviste fiebre recientemente?','Anamnesis','Síntomas generales','No.',50),
 
--- ============================================================================
--- 10. TABELA: diagnosticos_diferenciais (5 por sessão)
--- ============================================================================
-CREATE TABLE IF NOT EXISTS diagnosticos_diferenciais (
-    id                  SERIAL PRIMARY KEY,
-    sessao_id           INTEGER         NOT NULL REFERENCES sessoes(id) ON DELETE CASCADE,
-    ordem_prioridade    INTEGER         NOT NULL,
-    texto_diagnostico   TEXT            NOT NULL,
-    criado_em           TIMESTAMPTZ     NOT NULL DEFAULT NOW(),
-    atualizado_em       TIMESTAMPTZ     NOT NULL DEFAULT NOW(),
+-- =========================
+-- RESPIRATORIO
+-- =========================
+('¿Tenés tos?','Anamnesis','Respiratorio','No.',51),
+('¿Hace cuánto tenés tos?','Anamnesis','Respiratorio','No tengo tos.',52),
+('¿La tos tiene flema?','Anamnesis','Respiratorio','No.',53),
+('¿La flema tiene sangre?','Anamnesis','Respiratorio','No.',54),
+('¿Te falta el aire al caminar o hacer esfuerzo?','Anamnesis','Respiratorio','No.',55),
+('¿Te falta el aire incluso estando en reposo?','Anamnesis','Respiratorio','No.',56),
+('¿Te despertás de noche por falta de aire?','Anamnesis','Respiratorio','No.',57),
+('¿Sentís opresión en el pecho al respirar?','Anamnesis','Respiratorio','No.',58),
+('¿Tuviste infecciones respiratorias frecuentes?','Anamnesis','Respiratorio','No.',59),
+('¿Alguna vez usaste inhaladores?','Anamnesis','Respiratorio','No.',60),
 
-    CONSTRAINT chk_ordem CHECK (ordem_prioridade BETWEEN 1 AND 5)
-);
+-- =========================
+-- CARDIOVASCULAR
+-- =========================
+('¿Sentís palpitaciones o latidos fuertes del corazón?','Anamnesis','Cardiovascular','No.',61),
+('¿Sentís presión o dolor en el pecho?','Anamnesis','Cardiovascular','No.',62),
+('¿Te falta el aire al subir escaleras?','Anamnesis','Cardiovascular','No.',63),
+('¿Se te hinchan los pies o tobillos?','Anamnesis','Cardiovascular','No.',64),
+('¿Alguna vez te dijeron que tenés soplo cardíaco?','Anamnesis','Cardiovascular','No.',65),
+('¿Te cansás más rápido que otras personas al caminar?','Anamnesis','Cardiovascular','No.',66),
+('¿Alguna vez tuviste dolor en el pecho al hacer esfuerzo?','Anamnesis','Cardiovascular','No.',67),
+('¿Te mareás cuando te levantás rápido?','Anamnesis','Cardiovascular','No.',68),
+('¿Alguna vez te desmayaste?','Anamnesis','Cardiovascular','No.',69),
+('¿Te controlaste la presión arterial alguna vez?','Anamnesis','Cardiovascular','Sí, en controles médicos.',70),
 
--- Cada sessão só tem um diagnóstico por posição de prioridade
-CREATE UNIQUE INDEX IF NOT EXISTS ix_diagnosticos_sessao_ordem
-    ON diagnosticos_diferenciais (sessao_id, ordem_prioridade);
+-- =========================
+-- GASTROINTESTINAL
+-- =========================
+('¿Tenés náuseas?','Anamnesis','Gastrointestinal','No.',71),
+('¿Estuviste vomitando últimamente?','Anamnesis','Gastrointestinal','No.',72),
+('¿Tenés dolor en la panza?','Anamnesis','Gastrointestinal','No.',73),
+('¿Dónde sentís el dolor en la panza?','Anamnesis','Gastrointestinal','No tengo dolor.',74),
+('¿Tenés diarrea?','Anamnesis','Gastrointestinal','No.',75),
+('¿Estás estreñido últimamente?','Anamnesis','Gastrointestinal','No.',76),
+('¿Notaste sangre en la materia fecal?','Anamnesis','Gastrointestinal','No.',77),
+('¿Sentís acidez después de comer?','Anamnesis','Gastrointestinal','No.',78),
+('¿Tenés dificultad para tragar alimentos?','Anamnesis','Gastrointestinal','No.',79),
+('¿Cómo es tu apetito?','Anamnesis','Gastrointestinal','Normal.',80),
 
--- ============================================================================
--- 11. TABELA: sessoes_pdfs (referência ao PDF gerado — 1:1 com sessão)
--- ============================================================================
-CREATE TABLE IF NOT EXISTS sessoes_pdfs (
-    id                  SERIAL PRIMARY KEY,
-    sessao_id           INTEGER         NOT NULL REFERENCES sessoes(id) ON DELETE CASCADE,
-    nome_arquivo        VARCHAR(300)    NOT NULL,
-    caminho_arquivo     VARCHAR(500)    NOT NULL,
-    gerado_em           TIMESTAMPTZ     NOT NULL DEFAULT NOW()
-);
+-- =========================
+-- URINARIO
+-- =========================
+('¿Te arde al orinar?','Anamnesis','Urinario','No.',81),
+('¿Orinás más seguido de lo normal?','Anamnesis','Urinario','No.',82),
+('¿Te levantás de noche para orinar?','Anamnesis','Urinario','No.',83),
+('¿Notaste sangre en la orina?','Anamnesis','Urinario','No.',84),
+('¿Sentís urgencia para orinar?','Anamnesis','Urinario','No.',85),
+('¿Tenés dificultad para empezar a orinar?','Anamnesis','Urinario','No.',86),
+('¿El chorro de orina es normal?','Anamnesis','Urinario','Sí.',87),
+('¿Sentís que la vejiga queda vacía después de orinar?','Anamnesis','Urinario','Sí.',88),
+('¿Tuviste infecciones urinarias antes?','Anamnesis','Urinario','No.',89),
+('¿Tenés dolor en la parte baja de la espalda?','Anamnesis','Urinario','No.',90),
 
--- Garantir relação 1:1 com sessão
-CREATE UNIQUE INDEX IF NOT EXISTS ix_sessoes_pdfs_sessao ON sessoes_pdfs (sessao_id);
+-- =========================
+-- NEUROLÓGICO
+-- =========================
+('¿Tuviste dolor de cabeza recientemente?','Anamnesis','Neurológico','No.',91),
+('¿Sentiste mareos?','Anamnesis','Neurológico','No.',92),
+('¿Perdiste el conocimiento en algún momento?','Anamnesis','Neurológico','No.',93),
+('¿Sentís debilidad en alguna parte del cuerpo?','Anamnesis','Neurológico','No.',94),
+('¿Tenés hormigueo en brazos o piernas?','Anamnesis','Neurológico','No.',95),
+('¿Tenés problemas de memoria?','Anamnesis','Neurológico','No.',96),
+('¿Te cuesta mantener el equilibrio?','Anamnesis','Neurológico','No.',97),
+('¿Tenés temblores en las manos?','Anamnesis','Neurológico','No.',98),
+('¿Tenés dificultad para hablar?','Anamnesis','Neurológico','No.',99),
+('¿Tenés problemas para ver claramente?','Anamnesis','Neurológico','No.',100),
 
--- ============================================================================
--- 12. TABELA: anexos_casos (arquivos auxiliares — futuro)
--- ============================================================================
-CREATE TABLE IF NOT EXISTS anexos_casos (
-    id                  SERIAL PRIMARY KEY,
-    caso_clinico_id     INTEGER         NOT NULL REFERENCES casos_clinicos(id) ON DELETE CASCADE,
-    nome_arquivo        VARCHAR(300)    NOT NULL,
-    caminho_arquivo     VARCHAR(500)    NOT NULL,
-    tipo_arquivo        VARCHAR(50)     NOT NULL,
-    criado_em           TIMESTAMPTZ     NOT NULL DEFAULT NOW()
-);
+-- =========================
+-- SALUD MENTAL
+-- =========================
+('¿Te sentís ansioso con frecuencia?','Anamnesis','Salud mental','No.',101),
+('¿Te sentís triste o desanimado la mayor parte del tiempo?','Anamnesis','Salud mental','No.',102),
+('¿Tenés dificultad para concentrarte?','Anamnesis','Salud mental','No.',103),
+('¿Dormís mal por estrés?','Anamnesis','Salud mental','No.',104),
+('¿Tenés buen ánimo en general?','Anamnesis','Salud mental','Sí.',105),
 
--- ============================================================================
--- 13. TABELA: logs_importacao_casos (logs de importação YAML)
--- ============================================================================
-CREATE TABLE IF NOT EXISTS logs_importacao_casos (
-    id                          SERIAL PRIMARY KEY,
-    caso_clinico_id             INTEGER     REFERENCES casos_clinicos(id) ON DELETE SET NULL,
-    importado_por_usuario_id    INTEGER     NOT NULL REFERENCES usuarios(id) ON DELETE CASCADE,
-    tipo_origem                 VARCHAR(30) NOT NULL DEFAULT 'YAML',
-    conteudo_origem             TEXT,
-    status                      VARCHAR(20) NOT NULL,
-    mensagem_erro               TEXT,
-    criado_em                   TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+-- =========================
+-- SEXUAL
+-- =========================
+('¿Tenés pareja sexual actualmente?','Anamnesis','Sexual','Sí.',106),
+('¿Usás protección en tus relaciones sexuales?','Anamnesis','Sexual','Sí.',107),
+('¿Tuviste infecciones de transmisión sexual?','Anamnesis','Sexual','No.',108),
 
-    CONSTRAINT chk_status_importacao CHECK (status IN ('Sucesso', 'Erro'))
-);
+-- =========================
+-- VACUNACIÓN
+-- =========================
+('¿Tenés el calendario de vacunas al día?','Anamnesis','Vacunación','Sí.',109),
+('¿Recibiste vacuna contra COVID recientemente?','Anamnesis','Vacunación','Sí.',110),
+('¿Te vacunaste contra la gripe este año?','Anamnesis','Vacunación','Sí.',111),
 
--- ============================================================================
--- 14. TABELA: logs_auditoria (registro de ações administrativas)
--- ============================================================================
-CREATE TABLE IF NOT EXISTS logs_auditoria (
-    id                  SERIAL PRIMARY KEY,
-    usuario_id          INTEGER         NOT NULL REFERENCES usuarios(id) ON DELETE CASCADE,
-    nome_entidade       VARCHAR(100)    NOT NULL,
-    entidade_id         INTEGER         NOT NULL,
-    tipo_acao           VARCHAR(20)     NOT NULL,
-    valores_antigos     TEXT,
-    valores_novos       TEXT,
-    criado_em           TIMESTAMPTZ     NOT NULL DEFAULT NOW(),
+-- =========================
+-- SOCIAL
+-- =========================
+('¿Trabajás actualmente?','Anamnesis','Social','Sí.',112),
+('¿Tu trabajo implica esfuerzo físico?','Anamnesis','Social','No.',113),
+('¿Tenés apoyo de tu familia?','Anamnesis','Social','Sí.',114),
+('¿Vivís en un ambiente seguro?','Anamnesis','Social','Sí.',115),
+('¿Tenés acceso fácil a atención médica?','Anamnesis','Social','Sí.',116),
 
-    CONSTRAINT chk_tipo_acao CHECK (tipo_acao IN ('Criar', 'Atualizar', 'Deletar', 'Importar'))
-);
-
--- ============================================================================
--- 15. TABELA: configuracoes_sistema (chave-valor)
--- ============================================================================
-CREATE TABLE IF NOT EXISTS configuracoes_sistema (
-    id                  SERIAL PRIMARY KEY,
-    chave               VARCHAR(100)    NOT NULL,
-    valor               TEXT            NOT NULL,
-    descricao           TEXT,
-    atualizado_em       TIMESTAMPTZ     NOT NULL DEFAULT NOW()
-);
-
-CREATE UNIQUE INDEX IF NOT EXISTS ix_configuracoes_chave ON configuracoes_sistema (chave);
-
--- ============================================================================
--- FIM DA CRIAÇÃO DAS TABELAS
--- ============================================================================
-
-SELECT 'Banco de dados criado com sucesso! 15 tabelas.' AS resultado;
+-- =========================
+-- GENERAL
+-- =========================
+('¿Te sentís sano en general?','Anamnesis','General','Sí.',117),
+('¿Cómo describirías tu estado de salud?','Anamnesis','General','Bueno.',118),
+('¿Tu salud limita tus actividades?','Anamnesis','General','No.',119),
+('¿Tenés algún problema de salud actualmente?','Anamnesis','General','No.',120),
+('¿Te controlás con médicos regularmente?','Anamnesis','General','Sí.',121),
+('¿Te hacés análisis de sangre periódicamente?','Anamnesis','General','Sí.',122),
+('¿Te controlás el colesterol?','Anamnesis','General','Sí.',123),
+('¿Intentás mantener hábitos saludables?','Anamnesis','General','Sí.',124),
+('¿Hacés ejercicio regularmente?','Anamnesis','General','Sí.',125),
+('¿Te sentís con energía para tus actividades diarias?','Anamnesis','General','Sí.',126),
+('¿Podés hacer ejercicio sin problemas?','Anamnesis','General','Sí.',127),
+('¿Estás satisfecho con tu calidad de vida?','Anamnesis','General','Sí.',128),
+('¿Hay algo que te preocupe sobre tu salud futura?','Anamnesis','General','No.',129),
+('¿Tenés algún síntoma que no mencionamos?','Anamnesis','General','No.',130),
+('¿Hay algo más sobre tu salud que te gustaría contar?','Anamnesis','General','No.',131),
+('¿Tenés alguna pregunta para el médico?','Anamnesis','General','No.',132),
+('¿Dormís bien la mayoría de las noches?','Anamnesis','General','Sí.',133),
+('¿Te alimentás de forma equilibrada?','Anamnesis','General','Sí.',134),
+('¿Tomás suficiente agua durante el día?','Anamnesis','General','Sí.',135),
+('¿Evitás el consumo de tabaco?','Anamnesis','General','Sí.',136),
+('¿Evitás el consumo excesivo de alcohol?','Anamnesis','General','Sí.',137),
+('¿Te hacés controles odontológicos periódicos?','Anamnesis','General','Sí.',138),
+('¿Te realizaste chequeos médicos en el último año?','Anamnesis','General','Sí.',139),
+('¿Querés agregar algo más sobre tu salud?','Anamnesis','General','No.',140),
+('¿Te sentís con buen estado de ánimo la mayor parte del tiempo?','Anamnesis','General','Sí.',141),
+('¿Tu alimentación incluye frutas y verduras regularmente?','Anamnesis','General','Sí.',142),
+('¿Consumís suficiente proteína en tu dieta?','Anamnesis','General','Sí.',143),
+('¿Mantenés un peso estable?','Anamnesis','General','Sí.',144),
+('¿Realizás actividad física al menos tres veces por semana?','Anamnesis','General','Sí.',145),
+('¿Tenés tiempo para descansar durante la semana?','Anamnesis','General','Sí.',146),
+('¿Te sentís satisfecho con tu rutina diaria?','Anamnesis','General','Sí.',147),
+('¿Tenés hábitos que considerás saludables?','Anamnesis','General','Sí.',148),
+('¿Te sentís apoyado por tu entorno social?','Anamnesis','General','Sí.',149),
+('¿Considerás que tu salud es buena actualmente?','Anamnesis','General','Sí.',150);

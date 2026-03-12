@@ -27,13 +27,16 @@ public class PerguntasController : ControllerBase
     /// Obtem todas as perguntas cadastradas.
     /// </summary>
     /// <param name="apenasAtivas">Se verdadeiro, retorna apenas perguntas ativas. Padrao: true.</param>
+    /// <param name="casoClinicoId">Se informado, inclui tambem perguntas especificas deste caso clinico.</param>
     /// <returns>Lista de perguntas.</returns>
     /// <response code="200">Lista de perguntas retornada com sucesso.</response>
     [HttpGet]
     [ProducesResponseType(typeof(List<PerguntaResponse>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<List<PerguntaResponse>>> ObterTodas([FromQuery] bool apenasAtivas = true)
+    public async Task<ActionResult<List<PerguntaResponse>>> ObterTodas(
+        [FromQuery] bool apenasAtivas = true,
+        [FromQuery] int? casoClinicoId = null)
     {
-        var perguntas = await _perguntaService.ObterTodasAsync(apenasAtivas);
+        var perguntas = await _perguntaService.ObterTodasAsync(apenasAtivas, casoClinicoId);
         return Ok(perguntas);
     }
 

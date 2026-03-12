@@ -12,6 +12,7 @@ import { Pergunta } from '../../../core/models/pergunta.model';
 })
 export class PainelAnamneseComponent implements OnInit {
   @Input() perguntasJaFeitas: number[] = [];
+  @Input() casoClinicoId?: number;
   @Output() perguntaSelecionada = new EventEmitter<Pergunta>();
 
   private readonly perguntaService = inject(PerguntaService);
@@ -47,7 +48,7 @@ export class PainelAnamneseComponent implements OnInit {
 
   carregarPerguntas(): void {
     this.carregando.set(true);
-    this.perguntaService.listar(true).subscribe({
+    this.perguntaService.listar(true, this.casoClinicoId).subscribe({
       next: (dados) => {
         this.perguntas.set(dados);
         this.carregando.set(false);

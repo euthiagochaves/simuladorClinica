@@ -5,7 +5,14 @@
   </div>
   @if (erro()) { <div class="alerta alerta--erro">{{ erro() }}</div> }
   <div class="lista-page__busca">
-    <input type="text" class="input-busca" placeholder="Buscar..." [value]="filtro()" (input)="filtro.set($any($event.target).value)" />
+    <div class="filtros-inline">
+      <input type="text" class="input-busca" placeholder="Buscar..." [value]="filtro()" (input)="filtro.set($any($event.target).value)" />
+      <select class="input-busca input-busca--select" [value]="filtroSistema()" (change)="filtroSistema.set($any($event.target).value)">
+        @for (sistema of sistemasDisponiveis; track sistema) {
+          <option [value]="sistema">{{ sistema }}</option>
+        }
+      </select>
+    </div>
   </div>
   @if (carregando()) {
     <app-loading-spinner />

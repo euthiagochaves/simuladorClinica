@@ -38,7 +38,7 @@ simuladorClinica/
 │       │   ├── ImportacaoController.cs
 │       │   └── ConfiguracoesSistemaController.cs
 │       ├── Models/
-│       │   ├── Entities/           ← 15 entidades EF Core (PT-BR)
+│       │   ├── Entities/           ← 16 entidades EF Core (PT-BR)
 │       │   └── Enums/              ← 5 enums (PerfilUsuario, StatusSessao, etc.)
 │       ├── Data/
 │       │   └── ClinicaSimDbContext.cs  ← DbContext com Fluent API + snake_case
@@ -94,3 +94,4 @@ ng serve
 - Connection strings e variáveis sensíveis ficam em `appsettings.json` (nunca hardcoded)
 - Para desenvolvimento local, usar `appsettings.Development.json`
 - Arquivos `appsettings.*.local.json` estão no `.gitignore` para secrets locais
+

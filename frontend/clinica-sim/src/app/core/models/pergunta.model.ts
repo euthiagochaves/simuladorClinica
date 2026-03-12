@@ -6,4 +6,5 @@ export interface Pergunta {
   respostaPadrao: string;
   ativo: boolean;
   ordemExibicao?: number;
+  ehPerguntaCaso?: boolean;
 }

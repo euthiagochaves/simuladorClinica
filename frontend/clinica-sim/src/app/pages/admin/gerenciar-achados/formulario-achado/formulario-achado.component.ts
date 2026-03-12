@@ -1,5 +1,6 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { forkJoin } from 'rxjs';
 import { AchadoFisicoService } from '../../../../core/services/achado-fisico.service';
 import { AchadoFisico } from '../../../../core/models/achado-fisico.model';
 
@@ -22,20 +23,62 @@ export class FormularioAchadoComponent implements OnInit {
   sistemaCategoria = signal('');
   resultadoPadrao = signal('');
   ativo = signal(true);
-
-  readonly sistemas = ['EstadoGeral', 'Cardiovascular', 'Digestivo', 'Respiratorio', 'Nefrologico', 'Neurologico', 'Osteoarticular'];
+  sistemasDisponiveis = signal<string[]>([]);
 
   get modoEdicao(): boolean { return this.id() !== null; }
 
   ngOnInit(): void {
     const idParam = this.route.snapshot.paramMap.get('id');
-    if (idParam) {
-      this.id.set(Number(idParam));
-      this.achadoService.buscarPorId(Number(idParam)).subscribe({
-        next: (a) => { this.nome.set(a.nome); this.sistemaCategoria.set(a.sistemaCategoria); this.resultadoPadrao.set(a.resultadoPadrao); this.ativo.set(a.ativo); },
+    const achadoId = idParam ? Number(idParam) : null;
+    if (achadoId) {
+      this.id.set(achadoId);
+    }
+
+    if (achadoId) {
+      forkJoin({
+        achados: this.achadoService.listar(),
+        achadoAtual: this.achadoService.buscarPorId(achadoId)
+      }).subscribe({
+        next: (resultado) => {
+          const { achados, achadoAtual } = resultado as { achados: AchadoFisico[]; achadoAtual: AchadoFisico };
+          this.sistemasDisponiveis.set(this.extrairSistemas(achados));
+          this.nome.set(achadoAtual.nome);
+          this.sistemaCategoria.set(achadoAtual.sistemaCategoria);
+          this.resultadoPadrao.set(achadoAtual.resultadoPadrao);
+          this.ativo.set(achadoAtual.ativo);
+          this.garantirSistema(achadoAtual.sistemaCategoria);
+          this.sistemaCategoria.set(achadoAtual.sistemaCategoria);
+        },
         error: (err) => this.erro.set(err.mensagemAmigavel || 'Error al cargar.')
       });
+
+      return;
     }
+
+    this.achadoService.listar().subscribe({
+      next: (achados) => {
+        this.sistemasDisponiveis.set(this.extrairSistemas(achados));
+        this.sistemaCategoria.set(this.sistemasDisponiveis()[0] ?? '');
+      },
+      error: (err) => this.erro.set(err.mensagemAmigavel || 'Error al cargar.')
+    });
+  }
+
+  private extrairSistemas(achados: AchadoFisico[]): string[] {
+    return [...new Set(
+      achados
+        .map(achado => achado.sistemaCategoria)
+        .filter((valor): valor is string => Boolean(valor?.trim()))
+        .map(valor => valor.trim())
+    )].sort((a, b) => a.localeCompare(b));
+  }
+
+  private garantirSistema(valor: string): void {
+    if (!valor || this.sistemasDisponiveis().includes(valor)) {
+      return;
+    }
+
+    this.sistemasDisponiveis.set([...this.sistemasDisponiveis(), valor].sort((a, b) => a.localeCompare(b)));
   }
 
   salvar(): void {

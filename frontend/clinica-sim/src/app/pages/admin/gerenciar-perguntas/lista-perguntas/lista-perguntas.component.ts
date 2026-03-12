@@ -17,12 +17,32 @@ export class ListaPerguntasComponent implements OnInit {
   perguntas = signal<Pergunta[]>([]);
   carregando = signal(false);
   filtro = signal('');
+  filtroSecao = signal('Todas');
+  filtroCategoria = signal('Todas');
   erro = signal<string | null>(null);
+
+  get secoesDisponiveis(): string[] {
+    return ['Todas', ...new Set(this.perguntas().map(p => p.secao).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+  }
+
+  get categoriasDisponiveis(): string[] {
+    return ['Todas', ...new Set(this.perguntas().map(p => p.categoria).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+  }
 
   get perguntasFiltradas(): Pergunta[] {
     const texto = this.filtro().toLowerCase();
-    if (!texto) return this.perguntas();
-    return this.perguntas().filter(p => p.texto.toLowerCase().includes(texto) || p.categoria?.toLowerCase().includes(texto));
+    const secao = this.filtroSecao();
+    const categoria = this.filtroCategoria();
+
+    return this.perguntas().filter(p => {
+      const correspondeTexto = !texto
+        || p.texto.toLowerCase().includes(texto)
+        || p.secao?.toLowerCase().includes(texto)
+        || p.categoria?.toLowerCase().includes(texto);
+      const correspondeSecao = secao === 'Todas' || p.secao === secao;
+      const correspondeCategoria = categoria === 'Todas' || p.categoria === categoria;
+      return correspondeTexto && correspondeSecao && correspondeCategoria;
+    });
   }
 
   ngOnInit(): void { this.carregar(); }

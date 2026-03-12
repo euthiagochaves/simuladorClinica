@@ -16,7 +16,7 @@
     </div>
   } @else if (sessao()) {
     <div class="atendimento__conteudo">
-      <app-info-paciente [sessao]="sessao()!" />
+      <app-info-paciente [sessao]="sessao()!" [modoCegoTriagem]="modoCegoTriagem()" />
 
       <div class="atendimento__layout">
         <div class="atendimento__chat-col">
@@ -46,6 +46,7 @@
             @if (abaAtiva() === 'anamnese') {
               <app-painel-anamnese
                 [perguntasJaFeitas]="perguntasFeitas"
+                [casoClinicoId]="sessao()!.casoClinicoId"
                 (perguntaSelecionada)="onPerguntaSelecionada($event)"
               />
             }

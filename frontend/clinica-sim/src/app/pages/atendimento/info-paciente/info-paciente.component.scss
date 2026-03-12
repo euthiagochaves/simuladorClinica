@@ -36,4 +36,5 @@
   &--urgente { background: #ffe5e5; color: #c0392b; }
   &--normal { background: #e8f5e9; color: #2e7d32; }
   &--prioritario { background: #fff3e0; color: #e65100; }
+  &--oculta { background: transparent; color: inherit; padding: 0; }
 }

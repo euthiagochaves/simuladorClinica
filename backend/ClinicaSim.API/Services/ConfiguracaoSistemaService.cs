@@ -51,7 +51,18 @@ public class ConfiguracaoSistemaService : IConfiguracaoSistemaService
             .FirstOrDefaultAsync(c => c.Chave == chave);
 
         if (configuracao is null)
-            return null;
+        {
+            configuracao = new ConfiguracaoSistema
+            {
+                Chave = chave,
+                Valor = request.Valor,
+                Descricao = request.Descricao
+            };
+
+            _contexto.ConfiguracoesSistema.Add(configuracao);
+            await _contexto.SaveChangesAsync();
+            return MapearParaResponse(configuracao);
+        }
 
         configuracao.Valor = request.Valor;
         configuracao.Descricao = request.Descricao;

@@ -24,19 +24,43 @@ public class PerguntaService : IPerguntaService
     }
 
     /// <inheritdoc />
-    public async Task<List<PerguntaResponse>> ObterTodasAsync(bool apenasAtivas = true)
+    public async Task<List<PerguntaResponse>> ObterTodasAsync(bool apenasAtivas = true, int? casoClinicoId = null)
     {
-        var query = _contexto.Perguntas.AsNoTracking();
+        var queryGlobais = _contexto.Perguntas.AsNoTracking();
 
         if (apenasAtivas)
-            query = query.Where(p => p.Ativo);
+            queryGlobais = queryGlobais.Where(p => p.Ativo);
 
-        var perguntas = await query
+        var perguntasGlobais = await queryGlobais
             .OrderBy(p => p.OrdemExibicao)
             .ThenBy(p => p.Texto)
             .ToListAsync();
 
-        return perguntas.Select(MapearParaResponse).ToList();
+        var respostas = perguntasGlobais
+            .Select(p => MapearParaResponse(p, ehPerguntaCaso: false))
+            .ToList();
+
+        if (casoClinicoId.HasValue)
+        {
+            var queryCasos = _contexto.PerguntasCasos
+                .AsNoTracking()
+                .Where(p => p.CasoClinicoId == casoClinicoId.Value);
+
+            if (apenasAtivas)
+                queryCasos = queryCasos.Where(p => p.Ativo);
+
+            var perguntasCasos = await queryCasos
+                .OrderBy(p => p.OrdemExibicao)
+                .ThenBy(p => p.Texto)
+                .ToListAsync();
+
+            respostas.AddRange(perguntasCasos.Select(MapearPerguntaCasoParaResponse));
+        }
+
+        return respostas
+            .OrderBy(p => p.OrdemExibicao ?? 0)
+            .ThenBy(p => p.Texto)
+            .ToList();
     }
 
     /// <inheritdoc />
@@ -46,7 +70,7 @@ public class PerguntaService : IPerguntaService
             .AsNoTracking()
             .FirstOrDefaultAsync(p => p.Id == id);
 
-        return pergunta is null ? null : MapearParaResponse(pergunta);
+        return pergunta is null ? null : MapearParaResponse(pergunta, ehPerguntaCaso: false);
     }
 
     /// <inheritdoc />
@@ -65,7 +89,7 @@ public class PerguntaService : IPerguntaService
         _contexto.Perguntas.Add(pergunta);
         await _contexto.SaveChangesAsync();
 
-        return MapearParaResponse(pergunta);
+        return MapearParaResponse(pergunta, ehPerguntaCaso: false);
     }
 
     /// <inheritdoc />
@@ -84,7 +108,7 @@ public class PerguntaService : IPerguntaService
 
         await _contexto.SaveChangesAsync();
 
-        return MapearParaResponse(pergunta);
+        return MapearParaResponse(pergunta, ehPerguntaCaso: false);
     }
 
     /// <inheritdoc />
@@ -108,7 +132,7 @@ public class PerguntaService : IPerguntaService
     /// <summary>
     /// Mapeia uma entidade <see cref="Pergunta"/> para o DTO <see cref="PerguntaResponse"/>.
     /// </summary>
-    private static PerguntaResponse MapearParaResponse(Pergunta pergunta)
+    private static PerguntaResponse MapearParaResponse(Pergunta pergunta, bool ehPerguntaCaso)
     {
         return new PerguntaResponse(
             Id: pergunta.Id,
@@ -117,7 +141,25 @@ public class PerguntaService : IPerguntaService
             Categoria: pergunta.Categoria,
             RespostaPadrao: pergunta.RespostaPadrao,
             Ativo: pergunta.Ativo,
-            OrdemExibicao: pergunta.OrdemExibicao
+            OrdemExibicao: pergunta.OrdemExibicao,
+            EhPerguntaCaso: ehPerguntaCaso
+        );
+    }
+
+    /// <summary>
+    /// Mapeia uma entidade <see cref="PerguntaCaso"/> para o DTO <see cref="PerguntaResponse"/>.
+    /// </summary>
+    private static PerguntaResponse MapearPerguntaCasoParaResponse(PerguntaCaso pergunta)
+    {
+        return new PerguntaResponse(
+            Id: pergunta.Id,
+            Texto: pergunta.Texto,
+            Secao: pergunta.Secao,
+            Categoria: pergunta.Categoria,
+            RespostaPadrao: pergunta.RespostaPadrao,
+            Ativo: pergunta.Ativo,
+            OrdemExibicao: pergunta.OrdemExibicao,
+            EhPerguntaCaso: true
         );
     }
 }

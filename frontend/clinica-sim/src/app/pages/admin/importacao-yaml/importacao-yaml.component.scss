@@ -14,3 +14,43 @@
     margin-top: 0.5rem;
   }
 }
+
+.bloque-instrucoes {
+  margin-bottom: 1.2rem;
+
+  h2 {
+    margin: 0 0 0.4rem;
+    font-size: 1rem;
+    color: #1b3a4a;
+  }
+
+  textarea {
+    font-family: Consolas, 'Courier New', monospace;
+    line-height: 1.35;
+  }
+}
+
+.avisos {
+  margin-top: 1rem;
+  border: 1px solid #f2df9d;
+  background: #fff9e7;
+  border-radius: 8px;
+  padding: 0.85rem 1rem;
+
+  h3 {
+    margin: 0 0 0.5rem;
+    font-size: 0.9rem;
+    color: #8a6d1d;
+  }
+
+  ul {
+    margin: 0;
+    padding-left: 1.25rem;
+  }
+
+  li {
+    color: #6f5a1e;
+    font-size: 0.88rem;
+    margin-bottom: 0.3rem;
+  }
+}

@@ -28,6 +28,9 @@ public class ClinicaSimDbContext : DbContext
     /// <summary>Banco global de perguntas de anamnese.</summary>
     public DbSet<Pergunta> Perguntas => Set<Pergunta>();
 
+    /// <summary>Perguntas especificas criadas dentro de cada caso clinico.</summary>
+    public DbSet<PerguntaCaso> PerguntasCasos => Set<PerguntaCaso>();
+
     /// <summary>Respostas específicas de cada caso para perguntas do banco global.</summary>
     public DbSet<RespostaCasoPergunta> RespostasCasosPerguntas => Set<RespostaCasoPergunta>();
 
@@ -149,6 +152,34 @@ public class ClinicaSimDbContext : DbContext
             entity.Property(e => e.OrdemExibicao).HasColumnName("ordem_exibicao");
             entity.Property(e => e.CriadoEm).HasColumnName("criado_em");
             entity.Property(e => e.AtualizadoEm).HasColumnName("atualizado_em");
+        });
+
+        // =================================================================
+        // PERGUNTA CASO
+        // =================================================================
+        modelBuilder.Entity<PerguntaCaso>(entity =>
+        {
+            entity.ToTable("pergunta_casos");
+
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.CasoClinicoId).HasColumnName("caso_clinico_id").IsRequired();
+            entity.Property(e => e.Texto).HasColumnName("texto").IsRequired();
+            entity.Property(e => e.Secao).HasColumnName("secao").IsRequired().HasMaxLength(100);
+            entity.Property(e => e.Categoria).HasColumnName("categoria").IsRequired().HasMaxLength(100);
+            entity.Property(e => e.RespostaPadrao).HasColumnName("resposta_padrao").IsRequired();
+            entity.Property(e => e.Ativo).HasColumnName("ativo").HasDefaultValue(true);
+            entity.Property(e => e.OrdemExibicao).HasColumnName("ordem_exibicao");
+            entity.Property(e => e.CriadoEm).HasColumnName("criado_em");
+            entity.Property(e => e.AtualizadoEm).HasColumnName("atualizado_em");
+
+            entity.HasIndex(e => e.CasoClinicoId);
+
+            // Relacionamento: PerguntaCaso -> CasoClinico
+            entity.HasOne(e => e.CasoClinico)
+                .WithMany(c => c.PerguntasCasos)
+                .HasForeignKey(e => e.CasoClinicoId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
         // =================================================================

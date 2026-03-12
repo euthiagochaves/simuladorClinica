@@ -40,6 +40,7 @@ export class AtendimentoComponent implements OnInit {
   carregando = signal(false);
   erro = signal<string | null>(null);
   processando = signal(false);
+  modoCegoTriagem = signal(false);
   private contadorEventoLocal = 0;
 
   get perguntasFeitas(): number[] {
@@ -56,6 +57,7 @@ export class AtendimentoComponent implements OnInit {
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('sessaoId'));
+    this.modoCegoTriagem.set(this.route.snapshot.queryParamMap.get('modoCegoTriagem') === 'true');
     this.carregarSessao(id);
   }
 
@@ -89,7 +91,7 @@ export class AtendimentoComponent implements OnInit {
     const sessao = this.sessao();
     if (!sessao || this.processando()) return;
     this.processando.set(true);
-    this.sessaoService.fazerPergunta(sessao.id, pergunta.id).subscribe({
+    this.sessaoService.fazerPergunta(sessao.id, pergunta).subscribe({
       next: (resposta) => {
         const novoEvento: EventoSessao = {
           id: --this.contadorEventoLocal,

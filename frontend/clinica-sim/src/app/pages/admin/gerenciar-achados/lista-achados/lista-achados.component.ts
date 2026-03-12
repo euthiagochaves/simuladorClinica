@@ -17,12 +17,22 @@ export class ListaAchadosComponent implements OnInit {
   achados = signal<AchadoFisico[]>([]);
   carregando = signal(false);
   filtro = signal('');
+  filtroSistema = signal('Todos');
   erro = signal<string | null>(null);
+
+  get sistemasDisponiveis(): string[] {
+    return ['Todos', ...new Set(this.achados().map(a => a.sistemaCategoria).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+  }
 
   get achadosFiltrados(): AchadoFisico[] {
     const texto = this.filtro().toLowerCase();
-    if (!texto) return this.achados();
-    return this.achados().filter(a => a.nome.toLowerCase().includes(texto) || a.sistemaCategoria?.toLowerCase().includes(texto));
+    const sistema = this.filtroSistema();
+
+    return this.achados().filter(a => {
+      const correspondeTexto = !texto || a.nome.toLowerCase().includes(texto) || a.sistemaCategoria?.toLowerCase().includes(texto);
+      const correspondeSistema = sistema === 'Todos' || a.sistemaCategoria === sistema;
+      return correspondeTexto && correspondeSistema;
+    });
   }
 
   ngOnInit(): void { this.carregar(); }

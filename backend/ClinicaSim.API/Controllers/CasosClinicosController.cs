@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using ClinicaSim.API.DTOs.CasosClinicos;
 using ClinicaSim.API.DTOs.RespostasCasos;
 using ClinicaSim.API.DTOs.AchadosFisicosCasos;
+using ClinicaSim.API.DTOs.PerguntasCasos;
 using ClinicaSim.API.Services.Interfaces;
 
 namespace ClinicaSim.API.Controllers;
@@ -151,6 +152,113 @@ public class CasosClinicosController : ControllerBase
     }
 
     /// <summary>
+    /// Atualiza uma resposta de pergunta vinculada ao caso clinico.
+    /// </summary>
+    /// <param name="id">Identificador do caso clinico.</param>
+    /// <param name="respostaId">Identificador da resposta do caso.</param>
+    /// <param name="request">Dados atualizados da resposta.</param>
+    /// <returns>Dados da resposta atualizada.</returns>
+    [HttpPut("{id}/respostas/{respostaId}")]
+    [ProducesResponseType(typeof(RespostaCasoResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<RespostaCasoResponse>> AtualizarRespostaCaso(
+        int id,
+        int respostaId,
+        [FromBody] AtualizarRespostaCasoRequest request)
+    {
+        var resposta = await _casoClinicoService.AtualizarRespostaCasoAsync(id, respostaId, request);
+
+        if (resposta is null)
+            return NotFound();
+
+        return Ok(resposta);
+    }
+
+    /// <summary>
+    /// Remove uma resposta de pergunta vinculada ao caso clinico.
+    /// </summary>
+    /// <param name="id">Identificador do caso clinico.</param>
+    /// <param name="respostaId">Identificador da resposta do caso.</param>
+    [HttpDelete("{id}/respostas/{respostaId}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> RemoverRespostaCaso(int id, int respostaId)
+    {
+        var removida = await _casoClinicoService.RemoverRespostaCasoAsync(id, respostaId);
+
+        if (!removida)
+            return NotFound();
+
+        return NoContent();
+    }
+
+    /// <summary>
+    /// Obtem as perguntas especificas vinculadas a um caso clinico.
+    /// </summary>
+    /// <param name="id">Identificador do caso clinico.</param>
+    [HttpGet("{id}/perguntas-casos")]
+    [ProducesResponseType(typeof(List<PerguntaCasoResponse>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<List<PerguntaCasoResponse>>> ObterPerguntasCasos(int id)
+    {
+        var perguntas = await _casoClinicoService.ObterPerguntasCasosAsync(id);
+        return Ok(perguntas);
+    }
+
+    /// <summary>
+    /// Adiciona uma pergunta especifica ao caso clinico.
+    /// </summary>
+    /// <param name="id">Identificador do caso clinico.</param>
+    /// <param name="request">Dados da pergunta especifica.</param>
+    [HttpPost("{id}/perguntas-casos")]
+    [ProducesResponseType(typeof(PerguntaCasoResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<PerguntaCasoResponse>> AdicionarPerguntaCaso(int id, [FromBody] CriarPerguntaCasoRequest request)
+    {
+        var pergunta = await _casoClinicoService.AdicionarPerguntaCasoAsync(id, request);
+        return Created($"api/casos-clinicos/{id}/perguntas-casos/{pergunta.Id}", pergunta);
+    }
+
+    /// <summary>
+    /// Atualiza uma pergunta especifica de caso clinico.
+    /// </summary>
+    /// <param name="id">Identificador do caso clinico.</param>
+    /// <param name="perguntaCasoId">Identificador da pergunta especifica.</param>
+    /// <param name="request">Dados atualizados da pergunta.</param>
+    [HttpPut("{id}/perguntas-casos/{perguntaCasoId}")]
+    [ProducesResponseType(typeof(PerguntaCasoResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<PerguntaCasoResponse>> AtualizarPerguntaCaso(
+        int id,
+        int perguntaCasoId,
+        [FromBody] AtualizarPerguntaCasoRequest request)
+    {
+        var pergunta = await _casoClinicoService.AtualizarPerguntaCasoAsync(id, perguntaCasoId, request);
+
+        if (pergunta is null)
+            return NotFound();
+
+        return Ok(pergunta);
+    }
+
+    /// <summary>
+    /// Remove uma pergunta especifica de caso clinico.
+    /// </summary>
+    /// <param name="id">Identificador do caso clinico.</param>
+    /// <param name="perguntaCasoId">Identificador da pergunta especifica.</param>
+    [HttpDelete("{id}/perguntas-casos/{perguntaCasoId}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> RemoverPerguntaCaso(int id, int perguntaCasoId)
+    {
+        var removida = await _casoClinicoService.RemoverPerguntaCasoAsync(id, perguntaCasoId);
+
+        if (!removida)
+            return NotFound();
+
+        return NoContent();
+    }
+
+    /// <summary>
     /// Obtem todos os achados fisicos vinculados a um caso clinico.
     /// </summary>
     /// <param name="id">Identificador do caso clinico.</param>
@@ -179,5 +287,45 @@ public class CasosClinicosController : ControllerBase
     {
         var achado = await _casoClinicoService.AdicionarAchadoFisicoCasoAsync(id, request);
         return Created($"api/casos-clinicos/{id}/achados-fisicos/{achado.Id}", achado);
+    }
+
+    /// <summary>
+    /// Atualiza um achado fisico vinculado ao caso clinico.
+    /// </summary>
+    /// <param name="id">Identificador do caso clinico.</param>
+    /// <param name="achadoCasoId">Identificador do achado fisico do caso.</param>
+    /// <param name="request">Dados atualizados do achado fisico.</param>
+    [HttpPut("{id}/achados-fisicos/{achadoCasoId}")]
+    [ProducesResponseType(typeof(AchadoFisicoCasoResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<AchadoFisicoCasoResponse>> AtualizarAchadoFisicoCaso(
+        int id,
+        int achadoCasoId,
+        [FromBody] AtualizarAchadoFisicoCasoRequest request)
+    {
+        var achado = await _casoClinicoService.AtualizarAchadoFisicoCasoAsync(id, achadoCasoId, request);
+
+        if (achado is null)
+            return NotFound();
+
+        return Ok(achado);
+    }
+
+    /// <summary>
+    /// Remove um achado fisico vinculado ao caso clinico.
+    /// </summary>
+    /// <param name="id">Identificador do caso clinico.</param>
+    /// <param name="achadoCasoId">Identificador do achado fisico do caso.</param>
+    [HttpDelete("{id}/achados-fisicos/{achadoCasoId}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> RemoverAchadoFisicoCaso(int id, int achadoCasoId)
+    {
+        var removido = await _casoClinicoService.RemoverAchadoFisicoCasoAsync(id, achadoCasoId);
+
+        if (!removido)
+            return NotFound();
+
+        return NoContent();
     }
 }

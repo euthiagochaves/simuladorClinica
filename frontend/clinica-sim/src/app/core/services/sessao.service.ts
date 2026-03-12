@@ -5,6 +5,7 @@ import { environment } from '../../../environments/environment';
 import { Sessao, CriarSessaoRequest, RespostaInteracaoResponse } from '../models/sessao.model';
 import { EventoSessao } from '../models/evento-sessao.model';
 import { NotaClinica, NotaClinicaRequest } from '../models/nota-clinica.model';
+import { Pergunta } from '../models/pergunta.model';
 
 @Injectable({ providedIn: 'root' })
 export class SessaoService {
@@ -19,10 +20,14 @@ export class SessaoService {
     return this.http.get<Sessao>(`${this.baseUrl}/${id}`);
   }
 
-  fazerPergunta(sessaoId: number, perguntaId: number): Observable<RespostaInteracaoResponse> {
+  fazerPergunta(sessaoId: number, pergunta: Pergunta): Observable<RespostaInteracaoResponse> {
+    const payload = pergunta.ehPerguntaCaso
+      ? { perguntaId: null, perguntaCasoId: pergunta.id }
+      : { perguntaId: pergunta.id, perguntaCasoId: null };
+
     return this.http.post<RespostaInteracaoResponse>(
       `${this.baseUrl}/${sessaoId}/perguntas`,
-      { perguntaId }
+      payload
     );
   }
 

@@ -7,9 +7,10 @@ namespace ClinicaSim.API.Services.Interfaces;
 /// </summary>
 public interface IPerguntaService
 {
-    /// <summary>Obtem todas as perguntas, com filtro opcional de ativas.</summary>
+    /// <summary>Obtem as perguntas globais e, opcionalmente, perguntas especificas de um caso.</summary>
     /// <param name="apenasAtivas">Se verdadeiro, retorna apenas perguntas ativas.</param>
-    Task<List<PerguntaResponse>> ObterTodasAsync(bool apenasAtivas = true);
+    /// <param name="casoClinicoId">Identificador do caso clinico para incluir perguntas especificas (opcional).</param>
+    Task<List<PerguntaResponse>> ObterTodasAsync(bool apenasAtivas = true, int? casoClinicoId = null);
 
     /// <summary>Obtem uma pergunta pelo seu identificador.</summary>
     /// <param name="id">Identificador da pergunta.</param>

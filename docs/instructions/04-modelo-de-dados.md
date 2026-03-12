@@ -2,7 +2,7 @@
 
 ## Visão Geral
 
-O sistema possui **15 tabelas** no PostgreSQL (Supabase). Todas usam Entity Framework Core (Code-First) com Fluent API.
+O sistema possui **16 tabelas** no PostgreSQL (Supabase). Todas usam Entity Framework Core (Code-First) com Fluent API.
 
 **Convenção**: nomes de classes e propriedades em **português brasileiro (PT-BR)**. No banco PostgreSQL, todas as tabelas e colunas usam **snake_case** (configurado via Fluent API no DbContext).
 
@@ -55,6 +55,22 @@ Banco global de perguntas de anamnese.
 | Ativo          | bool     | Default: true                        |
 | OrdemExibicao  | int      | Ordem opcional                       |
 | CriadoEm       | DateTime |                                      |
+| AtualizadoEm   | DateTime |                                      |
+
+### PerguntaCaso
+Perguntas especificas criadas dentro de um caso clinico.
+
+| Propriedade    | Tipo     | Observa��es                              |
+|----------------|----------|------------------------------------------|
+| Id             | int (PK) |                                          |
+| CasoClinicoId  | int (FK) | FK para CasoClinico                      |
+| Texto          | string   | Texto da pergunta especifica             |
+| Secao          | string   | Secao clinica da pergunta                |
+| Categoria      | string   | Categoria clinica da pergunta            |
+| RespostaPadrao | string   | Resposta padrao daquela pergunta do caso |
+| OrdemExibicao  | int      | Ordem opcional                           |
+| Ativo          | bool     | Default: true                            |
+| CriadoEm       | DateTime |                                          |
 | AtualizadoEm   | DateTime |                                      |
 
 ### RespostaCasoPergunta
@@ -241,6 +257,7 @@ Usuario 1──N LogAuditoria
 Usuario 1──N LogImportacaoCaso
 
 CasoClinico 1──N RespostaCasoPergunta
+CasoClinico 1──N PerguntaCaso
 CasoClinico 1──N AchadoFisicoCaso
 CasoClinico 1──N Sessao
 CasoClinico 1──N AnexoCaso
@@ -264,3 +281,4 @@ Sessao 1──1 SessaoPdf
 - **Timestamps automáticos**: `CriadoEm` e `AtualizadoEm` preenchidos automaticamente no `SaveChangesAsync`
 - **Cascade delete** para entidades dependentes (eventos, notas, PDFs, diagnósticos)
 - **Restrict delete** para referências opcionais (usuario criador)
+

@@ -15,10 +15,12 @@ libpeerconnection.log
 testem.log
 typings/
 .nyc_output/
+/frontend/clinica-sim/src/environments.ts
 
 # ---- .NET ----
 bin/
 obj/
+backend/_build_tmp/
 *.user
 *.suo
 *.userosscache
@@ -44,6 +46,8 @@ BundleArtifacts/
 .env
 .env.*
 appsettings.*.local.json
+backend/ClinicaSim.API/appsettings.json
+backend/ClinicaSim.API/appsettings.Development.json
 *.pfx
 *.key
 

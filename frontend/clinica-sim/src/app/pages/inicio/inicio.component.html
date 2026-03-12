@@ -19,34 +19,40 @@
         <p>No hay casos clínicos disponibles en este momento.</p>
       </div>
     } @else {
-      <div class="inicio__grid">
+      <div class="inicio__top-acoes">
+        <button class="btn btn--primary" (click)="iniciarAtendimentoAleatorio()" [disabled]="iniciandoAleatorio() || iniciandoSessao() !== null">
+          {{ iniciandoAleatorio() ? 'Iniciando...' : 'Atender aleatorio' }}
+        </button>
+      </div>
+
+      <div class="lista-casos">
         @for (caso of casos(); track caso.id) {
-          <div class="card-caso">
-            <div class="card-caso__info">
-              <h2 class="card-caso__titulo">{{ caso.titulo }}</h2>
-              <div class="card-caso__detalles">
-                <p><span class="label">Paciente:</span> {{ caso.nomePaciente }}</p>
-                <p><span class="label">Edad:</span> {{ caso.idade }} años</p>
-                <p><span class="label">Sexo:</span> {{ caso.sexo }}</p>
-                <p><span class="label">Motivo de consulta:</span> {{ caso.queixaPrincipal }}</p>
-                <p>
-                  <span class="label">Triaje:</span>
-                  <span class="triagem triagem--{{ caso.triagem | lowercase }}">{{ caso.triagem }}</span>
-                </p>
-              </div>
+          <div class="linha-caso">
+            <div class="linha-caso__principal">
+              <span class="linha-caso__paciente">{{ caso.nomePaciente }}</span>
+              <span class="triagem triagem--{{ (caso.triagem || 'normal') | lowercase }}">{{ caso.triagem || 'Sin triaje' }}</span>
             </div>
-            <button
-              class="btn btn--primary card-caso__btn"
-              (click)="iniciarAtendimento(caso.id)"
-              [disabled]="iniciandoSessao() !== null"
-            >
-              @if (iniciandoSessao() === caso.id) {
-                Iniciando...
-              } @else {
-                Iniciar Atención ›››
-              }
-            </button>
+            <div class="linha-caso__acoes">
+              <button class="btn btn--secondary btn--icon" (click)="toggleInfoTriagem(caso.id)" [attr.aria-label]="'Información de triage de ' + caso.nomePaciente">
+                i
+              </button>
+              <button class="btn btn--primary" (click)="iniciarAtendimento(caso.id)" [disabled]="iniciandoSessao() !== null || iniciandoAleatorio()">
+                @if (iniciandoSessao() === caso.id) {
+                  Iniciando...
+                } @else {
+                  Atender
+                }
+              </button>
+            </div>
           </div>
+
+          @if (casoInfoAbertaId() === caso.id) {
+            <div class="linha-caso__info">
+              <p><span class="label">Triaje:</span> {{ caso.triagem || 'No informado' }}</p>
+              <p><span class="label">Motivo de consulta:</span> {{ caso.queixaPrincipal || 'No informado' }}</p>
+              <p><span class="label">Resumen:</span> {{ caso.resumo || 'No informado' }}</p>
+            </div>
+          }
         }
       </div>
     }

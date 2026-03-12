@@ -40,6 +40,17 @@
     }
   }
 
+  .input-busca--select {
+    width: 240px;
+  }
+
+  .filtros-inline {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
   .tabla-wrapper {
     overflow-x: auto;
   }

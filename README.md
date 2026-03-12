@@ -248,7 +248,7 @@ Documentacao detalhada em arquivos separados dentro de `docs/instructions/`:
 | [01 - Visao Geral](docs/instructions/01-visao-geral.md) | Objetivo, perfis de usuario, principios |
 | [02 - Stack e Estrutura](docs/instructions/02-stack-e-estrutura.md) | Tecnologias, pastas, como rodar |
 | [03 - Regras de Negocio](docs/instructions/03-regras-de-negocio.md) | Bancos globais, sobrescrita, sessao, fluxos |
-| [04 - Modelo de Dados](docs/instructions/04-modelo-de-dados.md) | 15 tabelas, campos, relacionamentos |
+| [04 - Modelo de Dados](docs/instructions/04-modelo-de-dados.md) | 16 tabelas, campos, relacionamentos |
 | [05 - Interface UI](docs/instructions/05-interface-ui.md) | Layout, abas, chat clinico, idioma espanhol |
 | [06 - Convencoes de Codigo](docs/instructions/06-convencoes-de-codigo.md) | Naming, padroes backend/frontend |
 | [07 - Restricoes do MVP](docs/instructions/07-restricoes-mvp.md) | O que faz e o que NAO faz parte do MVP |
@@ -258,3 +258,4 @@ Documentacao detalhada em arquivos separados dentro de `docs/instructions/`:
 ## Licenca
 
 Projeto educacional — uso interno.
+

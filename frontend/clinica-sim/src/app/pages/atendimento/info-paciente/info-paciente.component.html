@@ -5,20 +5,20 @@
   </div>
   <div class="info-paciente__campo">
     <span class="label">Edad:</span>
-    <span>{{ sessao.casoClinico?.idade }} años</span>
+    <span>{{ idadeExibicao }}</span>
   </div>
   <div class="info-paciente__campo">
     <span class="label">Sexo:</span>
-    <span>{{ sessao.casoClinico?.sexo }}</span>
+    <span>{{ sexoExibicao }}</span>
   </div>
   <div class="info-paciente__campo info-paciente__campo--largo">
     <span class="label">Motivo de consulta:</span>
-    <span>{{ sessao.casoClinico?.queixaPrincipal }}</span>
+    <span>{{ motivoExibicao }}</span>
   </div>
   <div class="info-paciente__campo">
     <span class="label">Triaje:</span>
-    <span class="triagem triagem--{{ sessao.casoClinico?.triagem | lowercase }}">
-      {{ sessao.casoClinico?.triagem }}
+    <span class="triagem triagem--{{ triagemExibicao | lowercase }}" [class.triagem--oculta]="!triagemExibicao">
+      {{ triagemExibicao }}
     </span>
   </div>
 </div>
